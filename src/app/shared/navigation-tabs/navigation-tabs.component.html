@@ -1,0 +1,34 @@
+<!-- #navbar #tabs #tabbar #navigationTabs #queryParams #paramMap #params #hash #fragment -->
+<nav mat-tab-nav-bar [tabPanel]="tabPanel">
+  <ng-container *ngFor="let tab of navigationTabs; index as i">
+    <a
+    *ngIf="tab.isShown"
+      mat-tab-link
+      (click)="activeLink = tab.url"
+      [active]="activeLink == tab.url"
+      [routerLink]="[tab.url]"
+      [disabled]="tab.isDisabled"
+    >
+      <!--
+[queryParams]="{
+  exampleQueryParams1: i + 1,
+  exampleQueryParams2: i + 2
+}"
+[fragment]="'example-fragment=' + (i + 1)"
+-->
+      {{
+        !tab.url.includes("view")
+          ? (tab.url | titlecase)
+          : (selectedEBook$ | async)?.volumeInfo?.title
+      }}
+      <!-- #titlecase #first use titlecase instead.
+capitalizeFirstLetters(sentence: string) {
+  sentence
+    .split(' ')
+    .map((element) => element[0].toLocaleUpperCase() + element.slice(1).toLocaleLowerCase())
+    .join(' ');
+} -->
+    </a></ng-container
+  >
+</nav>
+<mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>

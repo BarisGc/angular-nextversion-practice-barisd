@@ -1,0 +1,26 @@
+//TODO: why :host necessary?
+:host {
+  display: flex;
+  justify-content: center;
+  margin: 4.5rem 0;
+}
+
+mat-card {
+  padding: 1rem;
+  max-width: 600px;
+}
+
+img {
+  width: 60px;
+  min-width: 60px;
+  margin-left: 5px;
+}
+
+mat-card-content {
+  padding: 0;
+  margin: 1rem 0;
+}
+
+mat-card-actions {
+  justify-content: center;
+}

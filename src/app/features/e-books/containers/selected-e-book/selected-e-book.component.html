@@ -1,0 +1,7 @@
+<app-e-book-detail
+  [eBook]="(eBook$ | async)!"
+  [inCollection]="(isSelectedBookInCollection$ | async)!"
+  (add)="addToCollection($event)"
+  (remove)="removeFromCollection($event)"
+>
+</app-e-book-detail>

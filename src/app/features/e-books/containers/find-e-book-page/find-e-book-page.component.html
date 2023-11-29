@@ -1,0 +1,9 @@
+<app-e-book-search
+  [query]="(searchQuery$ | async)!"
+  [searching]="(loading$ | async)!"
+  [error]="(error$ | async)!"
+  (search)="bySearch($event)"
+>
+</app-e-book-search>
+<app-e-book-preview-list [relativeUrl]="previewEBookRelativeUrl" [eBooks]="(eBooks$ | async)!">
+</app-e-book-preview-list>

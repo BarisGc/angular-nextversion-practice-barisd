@@ -1,0 +1,22 @@
+<a [routerLink]="[relativeUrl, id]">
+  <mat-card>
+    <mat-card-title-group>
+      <img
+        mat-card-sm-image
+        *ngIf="thumbnail"
+        [src]="thumbnail"
+        [alt]="title"
+      />
+      <mat-card-title>{{ title | ellipsis : 35 }}</mat-card-title>
+      <mat-card-subtitle *ngIf="subtitle">{{
+        subtitle | ellipsis : 40
+      }}</mat-card-subtitle>
+    </mat-card-title-group>
+    <mat-card-content>
+      <p *ngIf="description">{{ description | ellipsis }}</p>
+    </mat-card-content>
+    <mat-card-footer>
+      <app-e-book-authors [eBook]="eBook"></app-e-book-authors>
+    </mat-card-footer>
+  </mat-card>
+</a>

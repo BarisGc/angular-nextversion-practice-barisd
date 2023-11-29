@@ -1,0 +1,21 @@
+<mat-card>
+  <mat-card-title>Find an E-Book</mat-card-title>
+  <mat-card-content>
+    <mat-form-field>
+      <input
+        matInput
+        placeholder="Search for an E-Book"
+        [value]="query"
+        (keyup)="bySearch($event)"
+      />
+    </mat-form-field>
+    <mat-spinner *ngIf="searching"
+      [class.show]="searching"
+      [diameter]="30"
+      [strokeWidth]="3"
+    ></mat-spinner>
+  </mat-card-content>
+  <mat-card-footer>
+    <span *ngIf="error">{{ error }}</span>
+  </mat-card-footer>
+</mat-card>

@@ -26,8 +26,8 @@ export class LoginPageComponent implements OnInit {
   }
 
   handleLogin() {
-    this.pending$ = this.authService.authState.pending.asObservable();
-    this.error$ = this.authService.authState.error.asObservable();
+    this.pending$ = this.authService.pending$;
+    this.error$ = this.authService.error$;
   }
   onSubmit(credentials: Credentials) {
     this.authService.login(credentials);

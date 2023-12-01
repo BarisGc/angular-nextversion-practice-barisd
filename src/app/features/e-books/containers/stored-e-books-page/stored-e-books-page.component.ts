@@ -1,9 +1,7 @@
 import { Component } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { FindEBookPageActions } from '../../actions/find-e-book-page.actions';
 import { EBook } from '../../models/e-book.model';
-import * as fromEBooks from '@example-app/features/e-books/reducers';
+import { EBookDataService } from '../../services/e-book-data.service';
 
 @Component({
   selector: 'app-stored-e-books-page',
@@ -15,13 +13,13 @@ export class StoredEBooksPageComponent {
 
   previewEBookRelativeUrl = '../view';
 
-  constructor(private store: Store) {
-    this.getInitialStoreData(store);
+  constructor(private eBookDataService: EBookDataService) {}
+
+  ngOnInit() {
+    this.getInitialState();
   }
 
-  ngOnInit() {}
-
-  getInitialStoreData(store: Store) {
-    this.eBooks$ = store.select(fromEBooks.selectAllEBooks);
+  getInitialState() {
+    this.eBooks$ = this.eBookDataService.eBooks$;
   }
 }

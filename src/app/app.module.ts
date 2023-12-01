@@ -2,27 +2,31 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ToastrModule } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
-import { MaterialModule } from './material';
+import { AppComponent } from './core/containers';
+import { HttpClientModule } from '@angular/common/http';
+import { MaterialModule } from './material/material.module';
+import { CoreModule } from './core/core.module';
+import { AuthModule } from './auth/auth.module';
+import { SharedModule } from './shared/shared.module';
 @NgModule({
-  declarations: [AppComponent],
   imports: [
     // TODO: is commonmodule necessary?
-    CommonModule,
+    SharedModule,
     BrowserModule,
-    AppRoutingModule,
     BrowserAnimationsModule, // required animations module
+    HttpClientModule,
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-right',
       preventDuplicates: true,
     }), // ToastrModule added
-    MaterialModule,
+    CoreModule,
+    AuthModule,
+    AppRoutingModule,
   ],
-  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

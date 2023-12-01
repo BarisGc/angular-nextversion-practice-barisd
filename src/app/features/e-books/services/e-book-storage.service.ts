@@ -63,7 +63,7 @@ export class EBookStorageService {
     );
   }
 
-  deleteCollectionKeyFromLocalStorage(): Observable<boolean> {
+  deleteKeyFromLocalStorage(): Observable<boolean> {
     return this.supported().pipe(
       map(() => true),
       tap(() => this.storage.removeItem(this.collectionKey)),

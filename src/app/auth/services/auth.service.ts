@@ -3,8 +3,8 @@ import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Credentials } from '../models/user';
-import { LogoutConfirmationDialogComponent } from '../components';
 import { ToastrService } from 'ngx-toastr';
+import { LogoutConfirmationDialogComponent } from '../components/logout-confirmation-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -34,19 +34,18 @@ export class AuthService {
     if (credentials) this.authState.userSub.next(credentials);
   }
 
-  login({
-    username,
-    password,
-  }: Credentials): Observable<Credentials | null | string> {
+  login({ username, password }: Credentials) {
     /**
      * Simulate a failed login to display the error
      * message for the login form.
      */
+    this.loginPending(true);
 
     if (username !== 'ngrx' || password !== 'Password10') {
-      return throwError(() => 'Invalid username or password');
+      this.loginFailure('Invalid username or password');
     }
-    return of({ username, password });
+
+    this.loginSuccess({ username, password });
   }
 
   loginPending(isPending: boolean) {
@@ -55,15 +54,20 @@ export class AuthService {
 
   loginSuccess(credentials: Credentials) {
     localStorage.setItem('credentials', JSON.stringify(credentials));
+    this.authState.userSub.next(credentials);
     this.router.navigate(['/']);
+
+    this.loginPending(false);
   }
 
-  loginFailure(error: '') {
+  loginFailure(error: string) {
     this.authState.errorSub.next(error);
+
+    this.loginPending(false);
   }
 
   loginRedirect() {
-    this.router.navigate(['/login']);
+    this.router.navigate(['login']);
   }
 
   logout() {

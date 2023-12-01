@@ -1,5 +1,5 @@
-import { EBook } from '@example-app/features/e-books/models/e-book.model';
 import { Component, Input, SimpleChanges } from '@angular/core';
+import { EBook } from '../../models/e-book.model';
 
 @Component({
   selector: 'app-e-book-preview-list',

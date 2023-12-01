@@ -15,13 +15,12 @@ export class GoogleEBooksService {
 
   constructor(private http: HttpClient) {}
 
-  // TODO: "%20" necessary?
   searchBooks(queryTitle = ''): Observable<EBook[]> {
     return this.http
       .get<{ items: EBook[] }>(
         `${this.API_PATH}?orderBy=newest&q=${queryTitle}`
       )
-      .pipe(map((books) => books.items || []));
+      .pipe(map((books) => books.items));
   }
 
   retrieveBook(volumeId: string): Observable<EBook> {

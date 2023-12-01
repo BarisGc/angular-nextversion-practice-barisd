@@ -1,37 +1,52 @@
+import { EBookCollectionService } from '../../services/e-book-collection-data.service';
+import { EBookDataService } from '../../services/e-book-data.service';
 import { Component } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
 import { EBook } from '../../models/e-book.model';
-import { SelectedEBookActions } from '../../actions/selected-e-book.actions';
+import { concatMap, map, of, tap, Observable } from 'rxjs';
 
-import * as fromEBooks from '@example-app/features/e-books/reducers';
 @Component({
   selector: 'app-selected-e-book',
   templateUrl: './selected-e-book.component.html',
   styleUrls: ['./selected-e-book.component.scss'],
 })
 export class SelectedEBookComponent {
-  eBook$!: Observable<EBook>;
+  selectedEBook$!: Observable<EBook>;
   isSelectedBookInCollection$!: Observable<boolean>;
 
-  constructor(private store: Store) {
-    this.getInitialStoreData(store);
+  constructor(
+    private eBookDataService: EBookDataService,
+    private eBookCollectionService: EBookCollectionService
+  ) {}
+
+  ngOnInit() {
+    this.getInitialState();
   }
 
-  getInitialStoreData(store: Store) {
-    this.eBook$ = store.select(
-      fromEBooks.selectSelectedEBook
-    ) as Observable<EBook>;
-    this.isSelectedBookInCollection$ = store.select(
-      fromEBooks.isSelectedEBookInCollection
+  getInitialState() {
+    const selectedEBook$ = this.eBookDataService.selectedEBook$;
+    const collectedEBooks$ = this.eBookCollectionService.collectedEBooks$;
+
+    const isSelectedEBookInCollection$ = collectedEBooks$.pipe(
+      concatMap((collectedEBooks: EBook[]) =>
+        selectedEBook$.pipe(
+          map((selectedEBook) =>
+            collectedEBooks.some(
+              (collectedEBook) => collectedEBook.id === selectedEBook?.id
+            )
+          )
+        )
+      )
     );
+
+    // TODO: check if the subscription covers other two inner obs
+    this.isSelectedBookInCollection$ = isSelectedEBookInCollection$;
   }
 
   addToCollection(eBook: EBook) {
-    this.store.dispatch(SelectedEBookActions.addEBook({ eBook }));
+    this.eBookCollectionService.addEBookToCollection(eBook);
   }
 
   removeFromCollection(eBook: EBook) {
-    this.store.dispatch(SelectedEBookActions.removeEBook({ eBook }));
+    this.eBookCollectionService.removeEBookFromCollection(eBook);
   }
 }

@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import {
   Component,
   Input,
@@ -5,14 +6,10 @@ import {
   OnInit,
   SimpleChanges,
 } from '@angular/core';
-import { Link } from '../models/links';
-import { Store } from '@ngrx/store';
-import { EBook } from '@example-app/features/e-books/models/e-book.model';
-import { Observable, filter, shareReplay, tap } from 'rxjs';
-import * as fromEBooks from '@example-app/features/e-books/reducers';
-import { NavigationEnd, NavigationStart, Route, Router } from '@angular/router';
-import { ViewEBookPageActions } from '@example-app/features/e-books/actions/view-e-book-page.actions';
-import { NavigationTab } from '@example-app/features/e-books/models/e-book-navigation-tab';
+import { Router } from '@angular/router';
+import { NavigationTab } from '../../features/e-books/models/e-book-navigation-tab';
+import { EBook } from '../../features/e-books/models/e-book.model';
+import { EBookDataService } from '../../features/e-books/services/e-book-data.service';
 
 @Component({
   selector: 'app-navigation-tabs',
@@ -23,15 +20,17 @@ export class NavigationTabsComponent implements OnInit, OnChanges {
   // #navigationTabs
   @Input() navigationTabs: NavigationTab[] = [];
   @Input() activeLink = 'stored';
-  selectedEBook$!: Observable<EBook>;
+  selectedEBook$!: Observable<EBook | null>;
   previousUrl: string = '';
   currentUrl: string = '';
   ebookViewDetailLink = '';
 
   // #cycleorder #cycle #order
-  constructor(private store: Store, private router: Router) {
+  constructor(
+    private router: Router,
+    private eBookDataService: EBookDataService
+  ) {
     console.log('constructor');
-    this.getInitialStore(store);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -40,30 +39,12 @@ export class NavigationTabsComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     console.log('ngOnInit');
-    // this.trackUrlForTabActivation();
+    this.getInitialState();
   }
 
-  getInitialStore(store: Store) {
-    this.selectedEBook$ = store.select(
-      fromEBooks.selectSelectedEBook
-    ) as Observable<EBook>;
+  getInitialState() {
+    this.selectedEBook$ = this.eBookDataService.selectedEBook$;
   }
-
-  // trackUrlForTabActivation() {
-  //   this.router.events
-  //     .pipe(filter((x): x is NavigationEnd => x instanceof NavigationEnd))
-  //     .subscribe((evnt: any) => {
-  //       this.previousUrl = this.currentUrl;
-  //       if (this.fixedTabsLinks.some((link) => link.url.includes('view'))) {
-  //         this.fixedTabsLinks[
-  //           this.fixedTabsLinks.findIndex((link) => link.url.includes('view'))
-  //         ].disabled = false;
-  //         this.store.dispatch(ViewEBookPageActions.unselectEBook());
-  //       }
-  //       this.currentUrl = evnt.url;
-  //       this.activeLink = evnt.url.split('/').slice(2, 3).join();
-  //     });
-  // }
 
   ngOnDestroy() {
     // TODO: manage selectedEBook unsubscription

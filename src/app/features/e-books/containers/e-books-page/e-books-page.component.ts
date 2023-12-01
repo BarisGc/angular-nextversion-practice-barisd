@@ -1,35 +1,28 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { Observable, Subject, of, takeUntil, tap } from 'rxjs';
 import { NavigationTab } from '../../models/e-book-navigation-tab';
-import * as fromNavigationTabs from '@example-app/features/e-books/reducers';
+import { EBookNavigationService } from '../../services/e-book-navigation.service';
 
 @Component({
   selector: 'app-e-books-page',
   templateUrl: './e-books-page.component.html',
   styleUrls: ['./e-books-page.component.scss'],
 })
-export class EBooksPageComponent implements OnInit, OnDestroy {
-  // navigationTabs$ = Observable<NavigationTab[]>;
+export class EBooksPageComponent implements OnInit {
   navigationTabs$!: Observable<NavigationTab[]>;
-
   activeLink = '';
-  constructor(private store: Store) {}
+
+  constructor(private eBookNavigationService: EBookNavigationService) {}
+
   ngOnInit(): void {
-    this.setInitialState();
+    this.getInitialState();
   }
 
-  setInitialState() {
+  getInitialState() {
     this.setInitialNavigationTabs();
   }
 
   setInitialNavigationTabs() {
-    this.navigationTabs$ = this.store.select(
-      fromNavigationTabs.selectNavigationTabs
-    );
-  }
-
-  ngOnDestroy(): void {
-    console.log('ebooks page comp destroyed');
+    this.navigationTabs$ = this.eBookNavigationService.navigationTabs$;
   }
 }

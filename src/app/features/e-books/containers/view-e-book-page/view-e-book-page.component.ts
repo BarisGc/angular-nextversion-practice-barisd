@@ -1,22 +1,11 @@
+import { EBookCollectionService } from '../../services/e-book-collection-data.service';
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { Observable, Subscription, map } from 'rxjs';
-import { ViewEBookPageActions } from '../../actions/view-e-book-page.actions';
-import { EBookNavigationTabActions } from '../../actions/e-book-navigation-tab-actions';
+import { concatMap, map, tap, switchMap } from 'rxjs';
 import { NavigationTab } from '../../models/e-book-navigation-tab';
-import * as fromEBooks from '@example-app/features/e-books/reducers';
-
-/**
- * Note: Container components are also reusable. Whether or not
- * a component is a presentation component or a container
- * component is an implementation detail.
- *
- * The View Book Page's responsibility is to map router params
- * to a 'Select' book action. Actually showing the selected
- * book remains a responsibility of the
- * SelectedBookPageComponent
- */
+import { EBookDataService } from '../../services/e-book-data.service';
+import { EBookNavigationService } from '../../services/e-book-navigation.service';
+import { EBook } from '../../models/e-book.model';
 @Component({
   selector: 'app-view-e-book-page',
   templateUrl: './view-e-book-page.component.html',
@@ -24,7 +13,7 @@ import * as fromEBooks from '@example-app/features/e-books/reducers';
 })
 export class ViewEBookPageComponent {
   params = this.route.snapshot.params;
-  tab: NavigationTab = {
+  dynamicTab: NavigationTab = {
     name: `view/${this.params['id']}`,
     url: `view/${this.params['id']}`,
     isShown: true,
@@ -32,69 +21,64 @@ export class ViewEBookPageComponent {
     isActive: true,
   };
 
-  constructor(private store: Store, private route: ActivatedRoute) {
-    route.params
-      .pipe(
-        map((params) => {
-          const tab = this.tab;
-          const actions = [
-            ViewEBookPageActions.selectEBook({ id: params['id'] }),
-            EBookNavigationTabActions.addTab({
-              tab,
-            }),
-          ];
+  constructor(
+    private route: ActivatedRoute,
+    private eBookDataService: EBookDataService,
+    private eBookNavigationService: EBookNavigationService,
+    private eBookCollectionService: EBookCollectionService
+  ) {}
 
-          return actions;
+  ngOnInit() {
+    this.setInitialState();
+  }
+
+  setInitialState() {
+    this.route.params
+      .pipe(
+        tap((params) => {
+          this.eBookDataService.selectEBook(params['id']);
+          this.eBookNavigationService.addTab(this.dynamicTab);
         })
       )
-      .subscribe((actions) => {
-        actions.forEach((action) => {
-          store.dispatch(action);
-        });
-      });
+      .subscribe();
+  }
+
+  setDynamicTabs() {
+    const collectedEBooks$ = this.eBookCollectionService.collectedEBooks$;
+    const selectedEBook$ = this.eBookDataService.selectedEBook$;
+
+    const isSelectedEBookInCollection$ = selectedEBook$.pipe(
+      switchMap((selectedEBook) =>
+        collectedEBooks$.pipe(
+          map((collectedEBooks) =>
+            collectedEBooks.some(
+              (collectedEBook) => collectedEBook.id === selectedEBook?.id
+            )
+          )
+        )
+      )
+    );
+
+    // TODO: check if the subscription covers other two inner obs
+    isSelectedEBookInCollection$
+      .pipe(
+        tap((isCollected) => {
+          if (!isCollected) {
+            this.eBookNavigationService.removeTab(this.dynamicTab);
+            // TODO: check if this ends tap execution
+            return;
+          }
+
+          this.eBookNavigationService.updateTab({
+            ...this.dynamicTab,
+            isDisabled: false,
+          });
+        })
+      )
+      .subscribe();
   }
 
   ngOnDestroy() {
-    const tab = this.tab;
-    this.store
-      .select(fromEBooks.isSelectedEBookInCollection)
-      .subscribe((isSelectedEBookInCollection) => {
-        if (!isSelectedEBookInCollection) {
-          this.store.dispatch(
-            EBookNavigationTabActions.removeTab({
-              tab: {
-                ...tab,
-                isDisabled: false,
-              },
-            })
-          );
-        }
-        if (isSelectedEBookInCollection) {
-          this.store.dispatch(
-            EBookNavigationTabActions.updateTab({
-              tab: {
-                ...tab,
-                isDisabled: false,
-              },
-            })
-          );
-        }
-      });
+    this.setDynamicTabs();
   }
 }
-// router.events.subscribe((event) => {
-//   let urlParam = '';
-
-//   if (event instanceof NavigationStart) {
-//     ViewEBookPageActions.selectEBook({
-//       id: urlParam[0],
-//     });
-//     EBookNavigationTabActions.addTab({
-//       tab,
-//     });
-//   } else if (event instanceof NavigationEnd) {
-//     EBookNavigationTabActions.removeTab({
-//       tab,
-//     });
-//   }
-// });

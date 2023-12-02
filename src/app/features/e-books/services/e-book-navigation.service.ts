@@ -1,39 +1,41 @@
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EBookNavigationService {
-  private navigationTabsSubs = new BehaviorSubject(initialTabs);
+  private navigationTabsSub = new BehaviorSubject<Tab[]>(initialTabs);
 
-  navigationTabs$ = this.navigationTabsSubs.asObservable();
+  navigationTabs$ = this.navigationTabsSub.asObservable();
+
+  get navigationTabs(): Tab[] {
+    return this.navigationTabsSub.getValue();
+  }
 
   constructor() {}
 
   addTab(tab: Tab) {
-    const excludeOldTab: Tab[] = this.navigationTabsSubs
-      .getValue()
-      .filter((_tab) => _tab.name !== tab.name);
+    const excludeOldTab: Tab[] = this.navigationTabs.slice(0, 3);
     const newTabsState = [...excludeOldTab, tab];
 
-    this.navigationTabsSubs.next(newTabsState);
+    this.navigationTabsSub.next(newTabsState);
   }
 
   removeTab(tab: Tab) {
-    const newTabsState: Tab[] = this.navigationTabsSubs
-      .getValue()
-      .filter((_tab) => _tab.name !== tab.name);
+    const newTabsState: Tab[] = this.navigationTabs.filter(
+      (_tab) => _tab.name !== tab.name
+    );
 
-    this.navigationTabsSubs.next(newTabsState);
+    this.navigationTabsSub.next(newTabsState);
   }
 
   updateTab(tab: Tab) {
-    const newTabsState: Tab[] = this.navigationTabsSubs
-      .getValue()
-      .filter((_tab) => (_tab.name === tab.name ? tab : _tab));
+    const newTabsState: Tab[] = this.navigationTabs.map((_tab) =>
+      _tab.name === tab.name ? tab : _tab
+    );
 
-    this.navigationTabsSubs.next(newTabsState);
+    this.navigationTabsSub.next(newTabsState);
   }
 }
 

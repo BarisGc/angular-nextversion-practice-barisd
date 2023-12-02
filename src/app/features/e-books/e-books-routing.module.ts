@@ -5,6 +5,7 @@ import { FindEBookPageComponent } from './containers/find-e-book-page/find-e-boo
 import { ViewEBookPageComponent } from './containers/view-e-book-page/view-e-book-page.component';
 import { StoredEBooksPageComponent } from './containers/stored-e-books-page/stored-e-books-page.component';
 import { EBooksPageComponent } from './containers/e-books-page/e-books-page.component';
+import { bookExistsGuard } from './guards/book-exists.guard';
 
 const routes: Routes = [
   {
@@ -35,6 +36,7 @@ const routes: Routes = [
         path: 'view/:id',
         component: ViewEBookPageComponent,
         data: { title: 'E-Book Details' },
+        // canActivate: [bookExistsGuard],
       },
     ],
   },

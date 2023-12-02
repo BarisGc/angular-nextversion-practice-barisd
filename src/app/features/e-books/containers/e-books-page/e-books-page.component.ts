@@ -8,21 +8,4 @@ import { EBookNavigationService } from '../../services/e-book-navigation.service
   templateUrl: './e-books-page.component.html',
   styleUrls: ['./e-books-page.component.scss'],
 })
-export class EBooksPageComponent implements OnInit {
-  navigationTabs$!: Observable<NavigationTab[]>;
-  activeLink = '';
-
-  constructor(private eBookNavigationService: EBookNavigationService) {}
-
-  ngOnInit(): void {
-    this.getInitialState();
-  }
-
-  getInitialState() {
-    this.setInitialNavigationTabs();
-  }
-
-  setInitialNavigationTabs() {
-    this.navigationTabs$ = this.eBookNavigationService.navigationTabs$;
-  }
-}
+export class EBooksPageComponent {}

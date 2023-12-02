@@ -1,7 +1,7 @@
 import { EBookCollectionService } from '../../services/e-book-collection-data.service';
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { concatMap, map, tap, switchMap } from 'rxjs';
+import { concatMap, map, tap, switchMap, Subscription } from 'rxjs';
 import { NavigationTab } from '../../models/e-book-navigation-tab';
 import { EBookDataService } from '../../services/e-book-data.service';
 import { EBookNavigationService } from '../../services/e-book-navigation.service';
@@ -21,6 +21,8 @@ export class ViewEBookPageComponent {
     isActive: true,
   };
 
+  masterSubscription = new Subscription();
+
   constructor(
     private route: ActivatedRoute,
     private eBookDataService: EBookDataService,
@@ -33,7 +35,11 @@ export class ViewEBookPageComponent {
   }
 
   setInitialState() {
-    this.route.params
+    this.enterPage();
+  }
+
+  enterPage() {
+    const stream1 = this.route.params
       .pipe(
         tap((params) => {
           this.eBookDataService.selectEBook(params['id']);
@@ -41,6 +47,7 @@ export class ViewEBookPageComponent {
         })
       )
       .subscribe();
+    this.masterSubscription.add(stream1);
   }
 
   setDynamicTabs() {
@@ -51,7 +58,7 @@ export class ViewEBookPageComponent {
       switchMap((selectedEBook) =>
         collectedEBooks$.pipe(
           map((collectedEBooks) =>
-            collectedEBooks.some(
+            collectedEBooks?.some(
               (collectedEBook) => collectedEBook.id === selectedEBook?.id
             )
           )
@@ -60,7 +67,7 @@ export class ViewEBookPageComponent {
     );
 
     // TODO: check if the subscription covers other two inner obs
-    isSelectedEBookInCollection$
+    const stream2 = isSelectedEBookInCollection$
       .pipe(
         tap((isCollected) => {
           if (!isCollected) {
@@ -76,9 +83,11 @@ export class ViewEBookPageComponent {
         })
       )
       .subscribe();
+    this.masterSubscription.add(stream2);
   }
 
   ngOnDestroy() {
     this.setDynamicTabs();
+    this.masterSubscription.unsubscribe();
   }
 }

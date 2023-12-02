@@ -1,6 +1,14 @@
-import { Observable } from 'rxjs';
+import {
+  Observable,
+  Subscription,
+  of,
+  shareReplay,
+  skip,
+  take,
+  takeUntil,
+} from 'rxjs';
 import { EBookSearchService } from './../../services/e-book-search.service';
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { EBook } from '../../models/e-book.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EBookDataService } from '../../services/e-book-data.service';
@@ -11,12 +19,14 @@ import { EBookDataService } from '../../services/e-book-data.service';
   styleUrls: ['./find-e-book-page.component.scss'],
 })
 export class FindEBookPageComponent {
+  masterSubscription = new Subscription();
+
   searchQuery$!: Observable<string>;
   foundedEBooks$!: Observable<EBook[]>;
   loading$!: Observable<boolean>;
   error$!: Observable<string>;
 
-  allStoredEBooks!: any;
+  searchDataStream!: Subscription;
 
   previewEBookRelativeUrl = '../view';
 
@@ -38,7 +48,13 @@ export class FindEBookPageComponent {
   }
 
   bySearch(query: string) {
-    this.eBookSearchService.searchEBooks(query).subscribe();
+    this.eBookSearchService.searchEBooks(query);
+    if (!this.searchDataStream) {
+      this.searchDataStream = this.eBookSearchService
+        .getFoundedBooks()
+        .subscribe();
+      this.masterSubscription.add(this.searchDataStream);
+    }
   }
 
   // routePractice() {
@@ -51,4 +67,8 @@ export class FindEBookPageComponent {
   //   console.log('queryParams', this.route.snapshot.queryParams);
   //   console.log('paramMap', this.route.snapshot.paramMap);
   // }
+
+  ngOnDestroy() {
+    this.masterSubscription.unsubscribe();
+  }
 }

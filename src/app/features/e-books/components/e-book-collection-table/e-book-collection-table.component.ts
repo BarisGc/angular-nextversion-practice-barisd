@@ -37,6 +37,14 @@ export class EBookCollectionTableComponent {
   expandedElement!: AllColumns | null;
 
   ngOnInit() {
+    this.setInitialState();
+  }
+
+  setInitialState() {
+    this.setMatTable();
+  }
+
+  setMatTable() {
     this.dataSource = this.collectedEBooks.map((eBook) => {
       let reFactoredEBookElement: AllColumns = {
         id: eBook.id,

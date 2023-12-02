@@ -1,6 +1,6 @@
 <!-- #navbar #tabs #tabbar #navigationTabs #queryParams #paramMap #params #hash #fragment -->
 <nav mat-tab-nav-bar [tabPanel]="tabPanel">
-  <ng-container *ngFor="let tab of navigationTabs; index as i">
+  <ng-container *ngFor="let tab of navigationTabs$|async; index as i">
     <a
       *ngIf="tab.isShown"
       mat-tab-link
@@ -19,7 +19,8 @@
       {{
         !tab.url.includes('view')
           ? (tab.url | titlecase)
-          : (selectedEBook$ | async)?.volumeInfo?.title
+          : (selectedEBook$ | async)?.volumeInfo?.title +
+            (!tab.isDisabled ? ' - ' + 'Collected!' : '')
       }}
       <!-- #titlecase #first use titlecase instead.
 capitalizeFirstLetters(sentence: string) {
@@ -32,3 +33,8 @@ capitalizeFirstLetters(sentence: string) {
   >
 </nav>
 <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
+<!-- <pre>
+  selectedEBook: {{selectedEBook$|async|json}}
+  activeLink: {{activeLink|json}}
+  navigationTabs: {{navigationTabs|json}}
+</pre> -->

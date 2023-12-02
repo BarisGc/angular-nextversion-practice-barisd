@@ -9,11 +9,8 @@ import { EBookDataService } from '../../services/e-book-data.service';
   styleUrls: ['./e-book-collection-page.component.scss'],
 })
 export class EBookCollectionPageComponent implements OnInit {
-  collectedEBooks$!: Observable<EBook[]>;
-  constructor(
-    private eBookCollectionService: EBookCollectionService,
-    private eBookDataService: EBookDataService
-  ) {}
+  collectedEBooks$!: Observable<EBook[] | null>;
+  constructor(private eBookCollectionService: EBookCollectionService) {}
 
   ngOnInit(): void {
     this.checkIsCollectionStoraged();

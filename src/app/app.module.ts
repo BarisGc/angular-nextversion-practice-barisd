@@ -22,6 +22,10 @@ import { SharedModule } from './shared/shared.module';
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-right',
       preventDuplicates: true,
+      timeOut: 5000,
+      // 30000ms for debug
+      extendedTimeOut: 2000,
+      // 30000ms for debug
     }), // ToastrModule added
     CoreModule,
     AuthModule,

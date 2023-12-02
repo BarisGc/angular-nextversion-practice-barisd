@@ -10,7 +10,8 @@ import { concatMap, map, of, tap, Observable } from 'rxjs';
   styleUrls: ['./selected-e-book.component.scss'],
 })
 export class SelectedEBookComponent {
-  selectedEBook$!: Observable<EBook>;
+  selectedEBook$!: Observable<EBook | null>;
+  collectedEBooks$!: Observable<EBook[] | null>;
   isSelectedBookInCollection$!: Observable<boolean>;
 
   constructor(
@@ -23,16 +24,18 @@ export class SelectedEBookComponent {
   }
 
   getInitialState() {
-    const selectedEBook$ = this.eBookDataService.selectedEBook$;
-    const collectedEBooks$ = this.eBookCollectionService.collectedEBooks$;
+    this.selectedEBook$ = this.eBookDataService.selectedEBook$;
 
-    const isSelectedEBookInCollection$ = collectedEBooks$.pipe(
-      concatMap((collectedEBooks: EBook[]) =>
-        selectedEBook$.pipe(
-          map((selectedEBook) =>
-            collectedEBooks.some(
-              (collectedEBook) => collectedEBook.id === selectedEBook?.id
-            )
+    this.collectedEBooks$ = this.eBookCollectionService.collectedEBooks$;
+
+    const isSelectedEBookInCollection$ = this.collectedEBooks$.pipe(
+      concatMap((collectedEBooks) =>
+        this.selectedEBook$.pipe(
+          map(
+            (selectedEBook) =>
+              collectedEBooks?.some(
+                (collectedEBook) => collectedEBook?.id === selectedEBook?.id
+              ) || false
           )
         )
       )

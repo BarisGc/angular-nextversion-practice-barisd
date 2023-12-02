@@ -2,7 +2,12 @@ import { ToastrService } from 'ngx-toastr';
 import { GoogleEBooksService } from './google-e-books.service';
 import { Injectable } from '@angular/core';
 import { EBookDataService } from './e-book-data.service';
-import { Observable, catchError, finalize, of, tap } from 'rxjs';
+import {
+  Observable,
+  catchError,
+  of,
+  tap,
+} from 'rxjs';
 import { EBook } from '../models/e-book.model';
 
 @Injectable({
@@ -23,29 +28,24 @@ export class EBookApiService {
         return of([]);
       })
     );
-    // const newState =
-    //   query === ''
-    //     ? {
-    //         ids: [],
-    //         loading: false,
-    //         error: '',
-    //         query,
-    //       }
-    //     : {
-    //         ...this.eBookSearchState.getValue(),
-    //         loading: true,
-    //         error: '',
-    //         query,
-    //       };
-
-    // this.eBookDataService.setEBooks(newState)
   }
 
-  reqSuccess(eBooks: EBook[]) {
-    this.eBookDataService.setEBooks(eBooks);
+  reqSuccess(eBooks: EBook[] | undefined) {
+    if (eBooks) {
+      this.eBookDataService.setEBooks(eBooks);
+      return eBooks;
+    }
+    return this.dataCannotBeFound();
   }
 
   reqFailure(errorMsg: string) {
     this.toastrService.error(errorMsg);
+  }
+
+  dataCannotBeFound() {
+    const noData: EBook[] = [];
+    this.eBookDataService.setEBooks(noData);
+    this.toastrService.warning('No Founded Data');
+    return noData;
   }
 }

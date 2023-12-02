@@ -22,12 +22,15 @@ export const bookExistsGuard = (
   const router = inject(Router);
 
   /**
-   * This method creates an observable that waits for the `loaded` property
+   * This method creates an observable that waits for the `loading` property
    * of the collection state to turn `true`, emitting one time once loading
    * has finished.
    */
   function waitForCollectionToLoad(): Observable<boolean> {
-    return of(eBookCollectionService.loading$);
+    return eBookCollectionService.loading$.pipe(
+      filter((loading) => !loading),
+      take(1)
+    );
   }
 
   /**

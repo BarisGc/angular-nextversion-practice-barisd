@@ -1,3 +1,4 @@
+import { EBookNavigationService } from './../../features/e-books/services/e-book-navigation.service';
 import { Observable } from 'rxjs';
 import {
   Component,
@@ -18,7 +19,7 @@ import { EBookDataService } from '../../features/e-books/services/e-book-data.se
 })
 export class NavigationTabsComponent implements OnInit, OnChanges {
   // #navigationTabs
-  @Input() navigationTabs: NavigationTab[] = [];
+  navigationTabs$!: Observable<NavigationTab[]>;
   @Input() activeLink = 'stored';
   selectedEBook$!: Observable<EBook | null>;
   previousUrl: string = '';
@@ -28,7 +29,8 @@ export class NavigationTabsComponent implements OnInit, OnChanges {
   // #cycleorder #cycle #order
   constructor(
     private router: Router,
-    private eBookDataService: EBookDataService
+    private eBookDataService: EBookDataService,
+    private eBookNavigationService: EBookNavigationService
   ) {
     console.log('constructor');
   }
@@ -44,6 +46,7 @@ export class NavigationTabsComponent implements OnInit, OnChanges {
 
   getInitialState() {
     this.selectedEBook$ = this.eBookDataService.selectedEBook$;
+    this.navigationTabs$ = this.eBookNavigationService.navigationTabs$;
   }
 
   ngOnDestroy() {

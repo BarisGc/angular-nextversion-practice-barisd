@@ -14,7 +14,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'stored',
+        redirectTo: 'find',
         pathMatch: 'full',
       },
       {
@@ -36,7 +36,7 @@ const routes: Routes = [
         path: 'view/:id',
         component: ViewEBookPageComponent,
         data: { title: 'E-Book Details' },
-        // canActivate: [bookExistsGuard],
+        canActivate: [bookExistsGuard],
       },
     ],
   },

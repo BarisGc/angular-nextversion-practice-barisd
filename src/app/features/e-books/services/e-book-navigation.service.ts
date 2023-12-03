@@ -1,19 +1,24 @@
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EBookNavigationService {
   private navigationTabsSub = new BehaviorSubject<Tab[]>(initialTabs);
-
   navigationTabs$ = this.navigationTabsSub.asObservable();
-
   get navigationTabs(): Tab[] {
     return this.navigationTabsSub.getValue();
   }
 
-  constructor() {}
+  private selectedTabIndexSub = new BehaviorSubject<string>('');
+  selectedTabIndex$ = this.selectedTabIndexSub.asObservable();
+  get selectedTabIndex(): string {
+    return this.selectedTabIndexSub.getValue();
+  }
+
+  constructor(private route: ActivatedRoute) {}
 
   addTab(tab: Tab) {
     const excludeOldTab: Tab[] = this.navigationTabs.slice(0, 3);

@@ -9,40 +9,40 @@ import {
   NavigationStart,
   Router,
 } from '@angular/router';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { LayoutService } from './layout.service';
 @Injectable({
   providedIn: 'root',
 })
 export class RouterService {
+  layoutLoadingSub = new BehaviorSubject<boolean>(false);
+  layoutLoading$ = this.layoutLoadingSub.asObservable();
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private titleService: Title,
-    private layoutService: LayoutService
-  ) {
-    this.setTitle();
-  }
+    private titleService: Title
+  ) {}
 
   setTitle() {
-    this.route.data.pipe(
+    return this.route.data.pipe(
       map((data) => `E-Book Module - ${data['title']}`),
       tap((title) => this.titleService.setTitle(title))
     );
   }
 
-  handleNavigationLoading() {
+  getNavigationLoading() {
     this.router.events.subscribe((event) => {
       switch (true) {
         case event instanceof NavigationStart: {
-          this.layoutService.setLoading(true);
+          this.layoutLoadingSub.next(true);
           break;
         }
 
         case event instanceof NavigationEnd:
         case event instanceof NavigationCancel:
         case event instanceof NavigationError: {
-          this.layoutService.setLoading(false);
+          this.layoutLoadingSub.next(false);
+
           break;
         }
         default: {
@@ -50,5 +50,7 @@ export class RouterService {
         }
       }
     });
+
+    return this.layoutLoading$;
   }
 }

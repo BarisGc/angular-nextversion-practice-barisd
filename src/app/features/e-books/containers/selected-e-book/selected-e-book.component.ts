@@ -2,7 +2,7 @@ import { EBookCollectionService } from '../../services/e-book-collection-data.se
 import { EBookDataService } from '../../services/e-book-data.service';
 import { Component } from '@angular/core';
 import { EBook } from '../../models/e-book.model';
-import { concatMap, map, of, tap, Observable } from 'rxjs';
+import { tap, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-selected-e-book',
@@ -10,9 +10,11 @@ import { concatMap, map, of, tap, Observable } from 'rxjs';
   styleUrls: ['./selected-e-book.component.scss'],
 })
 export class SelectedEBookComponent {
-  selectedEBook$!: Observable<EBook | null>;
-  collectedEBooks$!: Observable<EBook[] | null>;
-  isSelectedBookInCollection$!: Observable<boolean>;
+  selectedEBook!: EBook;
+  collectedEBooks!: EBook[];
+  isSelectedBookInCollection!: boolean;
+
+  masterSubscription = new Subscription();
 
   constructor(
     private eBookDataService: EBookDataService,
@@ -24,25 +26,29 @@ export class SelectedEBookComponent {
   }
 
   getInitialState() {
-    this.selectedEBook$ = this.eBookDataService.selectedEBook$;
-
-    this.collectedEBooks$ = this.eBookCollectionService.collectedEBooks$;
-
-    const isSelectedEBookInCollection$ = this.collectedEBooks$.pipe(
-      concatMap((collectedEBooks) =>
-        this.selectedEBook$.pipe(
-          map(
-            (selectedEBook) =>
-              collectedEBooks?.some(
-                (collectedEBook) => collectedEBook?.id === selectedEBook?.id
-              ) || false
-          )
-        )
+    const selectedEBookStream = this.eBookDataService.selectedEBook$
+      .pipe(
+        tap((book) => {
+          this.selectedEBook = book as EBook;
+        })
       )
-    );
+      .subscribe();
 
-    // TODO: check if the subscription covers other two inner obs
-    this.isSelectedBookInCollection$ = isSelectedEBookInCollection$;
+    const collectedEBooksStream = this.eBookCollectionService.collectedEBooks$
+      .pipe(
+        tap((books) => {
+          this.collectedEBooks = books;
+          this.isSelectedBookInCollection = this.collectedEBooks.some(
+            (eBook) => eBook.id === this.selectedEBook.id
+          );
+        })
+      )
+      .subscribe();
+
+
+
+    this.masterSubscription.add(selectedEBookStream);
+    this.masterSubscription.add(collectedEBooksStream);
   }
 
   addToCollection(eBook: EBook) {
@@ -51,5 +57,9 @@ export class SelectedEBookComponent {
 
   removeFromCollection(eBook: EBook) {
     this.eBookCollectionService.removeEBookFromCollection(eBook);
+  }
+
+  ngOnDestroy() {
+    this.masterSubscription.unsubscribe();
   }
 }

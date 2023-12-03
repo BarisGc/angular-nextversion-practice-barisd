@@ -36,7 +36,13 @@ import { AuthService } from '../../auth/services/auth.service';
           </app-nav-item>
         </mat-nav-list>
       </mat-sidenav>
-      <app-toolbar (openMenu)="openSidenav()">E-Book Module</app-toolbar>
+      <app-toolbar (openMenu)="openSidenav()"
+        ><span
+          [ngStyle]="{ marginLeft: '1rem', cursor: 'pointer' }"
+          routerLink="/"
+          >E-Book Module</span
+        ></app-toolbar
+      >
       <div class="spinner-container" *ngIf="loading">
         <mat-spinner></mat-spinner>
       </div>
@@ -50,6 +56,11 @@ import { AuthService } from '../../auth/services/auth.service';
       }
       mat-sidenav {
         width: 300px;
+      }
+      .spinner-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 5rem;
       }
     `,
   ],

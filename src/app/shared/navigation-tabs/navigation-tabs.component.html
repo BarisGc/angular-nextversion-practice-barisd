@@ -1,13 +1,17 @@
 <!-- #navbar #tabs #tabbar #navigationTabs #queryParams #paramMap #params #hash #fragment -->
 <nav mat-tab-nav-bar [tabPanel]="tabPanel">
-  <ng-container *ngFor="let tab of navigationTabs$|async; index as i">
+  <ng-container *ngFor="let tab of navigationTabs; index as i">
     <a
       *ngIf="tab.isShown"
       mat-tab-link
-      (click)="activeLink = tab.url"
-      [active]="activeLink == tab.url"
-      [routerLink]="[tab.url]"
       [disabled]="tab.isDisabled"
+      [ngStyle]="{ cursor: 'pointer' }"
+      (click)="activeLink = tab.url"
+      [routerLink]="[tab.url]"
+      routerLinkActive
+      #rla="routerLinkActive"
+      [routerLinkActiveOptions]="{ exact: true }"
+      [active]="rla.isActive"
     >
       <!--
 [queryParams]="{

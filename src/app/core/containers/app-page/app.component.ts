@@ -9,13 +9,15 @@ import {
 import { Observable, of } from 'rxjs';
 import { AuthService } from '../../../auth/services/auth.service';
 import { LayoutService } from '../../services/layout.service';
+import { EBookNavigationService } from '../../../features/e-books/services/e-book-navigation.service';
+import { RouterService } from '../../services/navigation.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  loading$ = of(true);
+  loading$ = of(false);
 
   showSidenav$: Observable<boolean> = of(false);
   loggedIn$: Observable<boolean> = of(false);
@@ -23,37 +25,17 @@ export class AppComponent {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private layoutService: LayoutService
+    private layoutService: LayoutService,
+    private routerService: RouterService
   ) {
     this.showSidenav$ = of(false);
     this.loggedIn$ = of(false);
   }
 
   ngOnInit() {
-    this.handleNavigationLoading();
+    this.setLayoutLoading();
     this.checkUserAccess();
     this.checkSidenav();
-  }
-
-  handleNavigationLoading() {
-    this.router.events.subscribe((event) => {
-      switch (true) {
-        case event instanceof NavigationStart: {
-          this.loading$ = of(true);
-          break;
-        }
-
-        case event instanceof NavigationEnd:
-        case event instanceof NavigationCancel:
-        case event instanceof NavigationError: {
-          this.loading$ = of(false);
-          break;
-        }
-        default: {
-          break;
-        }
-      }
-    });
   }
 
   checkUserAccess() {
@@ -62,5 +44,9 @@ export class AppComponent {
 
   checkSidenav() {
     this.showSidenav$ = this.layoutService.showSidenav$;
+  }
+
+  setLayoutLoading() {
+    this.loading$ = this.routerService.getNavigationLoading();
   }
 }

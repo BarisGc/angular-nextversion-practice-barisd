@@ -1,5 +1,5 @@
 import { EBookNavigationService } from './../../features/e-books/services/e-book-navigation.service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription, filter, map, switchMap, tap } from 'rxjs';
 import {
   Component,
   Input,
@@ -7,7 +7,13 @@ import {
   OnInit,
   SimpleChanges,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  Router,
+  RouterEvent,
+  Event,
+} from '@angular/router';
 import { NavigationTab } from '../../features/e-books/models/e-book-navigation-tab';
 import { EBook } from '../../features/e-books/models/e-book.model';
 import { EBookDataService } from '../../features/e-books/services/e-book-data.service';
@@ -19,15 +25,19 @@ import { EBookDataService } from '../../features/e-books/services/e-book-data.se
 })
 export class NavigationTabsComponent implements OnInit, OnChanges {
   // #navigationTabs
-  navigationTabs$!: Observable<NavigationTab[]>;
-  @Input() activeLink = 'stored';
+  activeLink = 'stored';
+  navigationTabs!: NavigationTab[];
+
   selectedEBook$!: Observable<EBook | null>;
   previousUrl: string = '';
   currentUrl: string = '';
   ebookViewDetailLink = '';
 
+  masterSubscription = new Subscription();
+
   // #cycleorder #cycle #order
   constructor(
+    private route: ActivatedRoute,
     private router: Router,
     private eBookDataService: EBookDataService,
     private eBookNavigationService: EBookNavigationService
@@ -42,14 +52,37 @@ export class NavigationTabsComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     console.log('ngOnInit');
     this.getInitialState();
+    this.eventChecker();
+  }
+  eventChecker(): void {
+    this.router.events
+      .pipe(
+        filter(
+          (e: Event | RouterEvent): e is RouterEvent => e instanceof RouterEvent
+        ),
+        filter((e) => e instanceof NavigationEnd),
+        tap(() => console.log('url', this.router.url))
+      )
+      .subscribe();
+  }
+  getInitialState() {
+    this.getSelectedEBooks();
+    this.getNavigationTabs();
   }
 
-  getInitialState() {
+  getSelectedEBooks() {
     this.selectedEBook$ = this.eBookDataService.selectedEBook$;
-    this.navigationTabs$ = this.eBookNavigationService.navigationTabs$;
+  }
+
+  getNavigationTabs() {
+    const navigationTabsStream = this.eBookNavigationService.navigationTabs$
+      .pipe(tap((tabs) => (this.navigationTabs = tabs)))
+      .subscribe();
+
+    this.masterSubscription.add(navigationTabsStream);
   }
 
   ngOnDestroy() {
-    // TODO: manage selectedEBook unsubscription
+    this.masterSubscription.unsubscribe();
   }
 }

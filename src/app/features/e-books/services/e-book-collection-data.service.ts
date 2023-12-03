@@ -8,10 +8,15 @@ import { BehaviorSubject, catchError, map, of, tap } from 'rxjs';
   providedIn: 'root',
 })
 export class EBookCollectionService {
-  private collectedEBooksSub = new BehaviorSubject<EBook[] | null>(null);
+  private collectedEBooksSub = new BehaviorSubject<EBook[]>([]);
   private loadingSub = new BehaviorSubject<boolean>(false);
 
   collectedEBooks$ = this.collectedEBooksSub.asObservable();
+
+  get _collectedEBooks(): EBook[] {
+    return this.collectedEBooksSub.getValue();
+  }
+
   loading$ = this.loadingSub.asObservable();
 
   constructor(
@@ -52,14 +57,14 @@ export class EBookCollectionService {
    * If this fails we revert state by removing the book.
    */
   optimisticallyAddEBookToCollection(newCollectedEBook: EBook) {
-    const collectedEBooks = this.collectedEBooksSub.getValue();
-    const isDuplicatedId = collectedEBooks?.some(
+    const collectedEBooks = this._collectedEBooks;
+    const isDuplicatedId = collectedEBooks.some(
       (oldCollectedEBook) => oldCollectedEBook.id === newCollectedEBook.id
     );
 
     if (!isDuplicatedId) {
       const newCollectedEBooksState = [
-        ...(this.collectedEBooksSub.getValue() || []),
+        ...this._collectedEBooks,
         newCollectedEBook,
       ];
 
@@ -80,7 +85,7 @@ export class EBookCollectionService {
    * If addBook fails, we "undo" adding the book.
    */
   optimisticallyRemoveEBookFromCollection(unCollectedEBook: EBook) {
-    const collectedEBooks = this.collectedEBooksSub.getValue();
+    const collectedEBooks = this._collectedEBooks;
     const newCollectedEBooksState = collectedEBooks?.filter(
       (collectedEBook) => collectedEBook.id !== unCollectedEBook.id
     );

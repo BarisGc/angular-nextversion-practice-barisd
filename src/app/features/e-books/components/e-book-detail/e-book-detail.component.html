@@ -1,11 +1,13 @@
 <mat-card *ngIf="eBook">
   <mat-card-title-group>
-    <mat-card-title>{{ title }}</mat-card-title>
-    <mat-card-subtitle *ngIf="subtitle">{{ subtitle }}</mat-card-subtitle>
+    <mat-card-title>{{ title | ellipsis : 35 }}</mat-card-title>
+    <mat-card-subtitle *ngIf="subtitle">{{
+      subtitle | ellipsis : 40
+    }}</mat-card-subtitle>
     <img mat-card-sm-image *ngIf="thumbnail" [src]="thumbnail" />
   </mat-card-title-group>
   <mat-card-content>
-    <p [innerHtml]="description"></p>
+    <p [innerHtml]="description | ellipsis"></p>
   </mat-card-content>
   <mat-card-footer class="footer">
     <app-e-book-authors [eBook]="eBook"></app-e-book-authors>

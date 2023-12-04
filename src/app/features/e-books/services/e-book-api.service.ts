@@ -2,12 +2,7 @@ import { ToastrService } from 'ngx-toastr';
 import { GoogleEBooksService } from './google-e-books.service';
 import { Injectable } from '@angular/core';
 import { EBookDataService } from './e-book-data.service';
-import {
-  Observable,
-  catchError,
-  of,
-  tap,
-} from 'rxjs';
+import { Observable, catchError, of, tap } from 'rxjs';
 import { EBook } from '../models/e-book.model';
 
 @Injectable({
@@ -30,7 +25,7 @@ export class EBookApiService {
     );
   }
 
-  reqSuccess(eBooks: EBook[] | undefined) {
+  reqSuccess(eBooks: EBook[]) {
     if (eBooks) {
       this.eBookDataService.setEBooks(eBooks);
       return eBooks;

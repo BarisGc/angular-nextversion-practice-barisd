@@ -1,4 +1,4 @@
-import { EBookCollectionService } from '../../services/e-book-collection-data.service';
+import { EBookCollectionService } from '../../services/e-book-collection.service';
 import { EBookDataService } from '../../services/e-book-data.service';
 import { Component } from '@angular/core';
 import { EBook } from '../../models/e-book.model';

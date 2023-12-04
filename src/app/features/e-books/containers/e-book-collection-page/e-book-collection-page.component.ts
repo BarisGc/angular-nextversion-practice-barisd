@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { EBookCollectionService } from '../../services/e-book-collection-data.service';
+import { EBookCollectionService } from '../../services/e-book-collection.service';
 import { Component, OnInit } from '@angular/core';
 import { EBook } from '../../models/e-book.model';
 import { EBookDataService } from '../../services/e-book-data.service';

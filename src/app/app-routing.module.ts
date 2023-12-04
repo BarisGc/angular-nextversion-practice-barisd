@@ -14,6 +14,7 @@ const routes: Routes = [
     loadChildren: () =>
       import('./features/e-books/e-books.module').then((m) => m.EBooksModule),
     canActivate: [authGuard],
+    data: { title: 'E-Books' },
   },
   {
     path: '**',

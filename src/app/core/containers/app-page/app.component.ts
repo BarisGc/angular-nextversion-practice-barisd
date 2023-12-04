@@ -5,8 +5,10 @@ import {
   NavigationCancel,
   NavigationError,
   Router,
+  ActivatedRoute,
+  Data,
 } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { Observable, filter, map, of, tap } from 'rxjs';
 import { AuthService } from '../../../auth/services/auth.service';
 import { LayoutService } from '../../services/layout.service';
 import { EBookNavigationService } from '../../../features/e-books/services/e-book-navigation.service';
@@ -26,7 +28,8 @@ export class AppComponent {
     private router: Router,
     private authService: AuthService,
     private layoutService: LayoutService,
-    private routerService: RouterService
+    private routerService: RouterService,
+    private route: ActivatedRoute
   ) {
     this.showSidenav$ = of(false);
     this.loggedIn$ = of(false);
@@ -36,6 +39,7 @@ export class AppComponent {
     this.setLayoutLoading();
     this.checkUserAccess();
     this.checkSidenav();
+    this.setTitle();
   }
 
   checkUserAccess() {
@@ -48,5 +52,9 @@ export class AppComponent {
 
   setLayoutLoading() {
     this.loading$ = this.routerService.getNavigationLoading();
+  }
+
+  setTitle() {
+    this.routerService.setTitle().subscribe();
   }
 }

@@ -1,4 +1,4 @@
-import { EBookCollectionService } from '../../services/e-book-collection-data.service';
+import { EBookCollectionService } from '../../services/e-book-collection.service';
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { concatMap, map, tap, switchMap, Subscription } from 'rxjs';

@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
-import { map, tap } from 'rxjs/operators';
+import { filter, map, switchMap, tap } from 'rxjs/operators';
 import { Title } from '@angular/platform-browser';
 import {
   ActivatedRoute,
+  Data,
   NavigationCancel,
   NavigationEnd,
   NavigationError,
   NavigationStart,
   Router,
 } from '@angular/router';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { LayoutService } from './layout.service';
 @Injectable({
   providedIn: 'root',
@@ -22,13 +23,6 @@ export class RouterService {
     private router: Router,
     private titleService: Title
   ) {}
-
-  setTitle() {
-    return this.route.data.pipe(
-      map((data) => `E-Book Module - ${data['title']}`),
-      tap((title) => this.titleService.setTitle(title))
-    );
-  }
 
   getNavigationLoading() {
     this.router.events.subscribe((event) => {
@@ -52,5 +46,23 @@ export class RouterService {
     });
 
     return this.layoutLoading$;
+  }
+
+  setTitle() {
+    return this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      switchMap(() => this.getChildData()),
+      tap((title) => this.titleService.setTitle(title))
+    );
+  }
+
+  getChildData(): Observable<any> {
+    return this.getChild(this.route).data.pipe(
+      map((data) => `E-Book Module - ${data['title']}`)
+    );
+  }
+
+  getChild(route: ActivatedRoute): ActivatedRoute {
+    return route.firstChild ? this.getChild(route.firstChild) : route;
   }
 }

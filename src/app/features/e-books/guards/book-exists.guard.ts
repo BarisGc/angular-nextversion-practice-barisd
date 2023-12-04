@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, filter, map, switchMap, take, tap } from 'rxjs/operators';
 
 import { GoogleEBooksService } from '../services';
-import { EBookCollectionService } from '../services/e-book-collection-data.service';
+import { EBookCollectionService } from '../services/e-book-collection.service';
 import { EBookDataService } from '../services/e-book-data.service';
 
 /**
@@ -67,6 +67,7 @@ export const bookExistsGuard = (
     return hasBookInStore(id).pipe(
       switchMap((inStore) => {
         if (inStore) {
+          eBookCollectionService.loadCollection().pipe(take(1)).subscribe();
           return of(inStore);
         }
 

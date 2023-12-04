@@ -46,7 +46,10 @@ export class EBookDataService {
    * "load a book with the given ID from the API and caches it in the store, returning `true` or `false` if it was found."
    */
   loadEBook(eBook: EBook) {
-    this.eBooksSub.next([...this._eBooks, eBook]);
+    this.eBooksSub.next([
+      ...this._eBooks.filter((_eBook) => _eBook.id !== eBook.id),
+      eBook,
+    ]);
     return true;
   }
 }

@@ -21,6 +21,6 @@ export class EBookCollectionPageComponent implements OnInit {
     this.collectedEBooks$ = this.eBookCollectionService.collectedEBooks$;
   }
   checkIsCollectionStoraged() {
-    this.eBookCollectionService.loadCollection();
+    this.eBookCollectionService.loadCollection().subscribe();
   }
 }

@@ -8,6 +8,7 @@ import {
   debounceTime,
   distinctUntilChanged,
   switchMap,
+  finalize,
 } from 'rxjs';
 import { EBookApiService } from './e-book-api.service';
 import { EBook } from '../models/e-book.model';
@@ -37,14 +38,16 @@ export class EBookSearchService {
         if (query === '') return this.clearSearch();
 
         return this.eBookApiService.getEBooks(query).pipe(
-          tap(() => this.searchEBooksLoading(true)),
           map((foundedEBooks) => this.searchEBooksSuccess(foundedEBooks)),
+          finalize(() => this.searchEBooksLoading(false)),
           catchError((err) => this.searchEBooksFailure(err))
         );
       })
     );
   }
+
   searchEBooks(query: string) {
+    this.searchEBooksLoading(true);
     this.querySub.next(query);
   }
 
@@ -54,14 +57,12 @@ export class EBookSearchService {
 
   searchEBooksSuccess(foundedEBooks: EBook[]) {
     this.foundedEBooksSub.next(foundedEBooks);
-    this.searchEBooksLoading(false);
 
     return foundedEBooks;
   }
 
   searchEBooksFailure(err: string) {
     this.errorSub.next(err);
-    this.searchEBooksLoading(false);
 
     return EMPTY;
   }

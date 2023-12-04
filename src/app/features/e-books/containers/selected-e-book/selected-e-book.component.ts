@@ -45,18 +45,22 @@ export class SelectedEBookComponent {
       )
       .subscribe();
 
-
-
     this.masterSubscription.add(selectedEBookStream);
     this.masterSubscription.add(collectedEBooksStream);
   }
 
   addToCollection(eBook: EBook) {
-    this.eBookCollectionService.addEBookToCollection(eBook);
+    const collectionAddStream$ = this.eBookCollectionService
+      .optimicallyAddEBook(eBook)
+      .subscribe();
+    this.masterSubscription.add(collectionAddStream$);
   }
 
   removeFromCollection(eBook: EBook) {
-    this.eBookCollectionService.removeEBookFromCollection(eBook);
+    const collectionRemoveStream$ = this.eBookCollectionService
+      .optimicallyRemoveEBook(eBook)
+      .subscribe();
+    this.masterSubscription.add(collectionRemoveStream$);
   }
 
   ngOnDestroy() {

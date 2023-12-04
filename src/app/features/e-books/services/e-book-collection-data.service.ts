@@ -2,7 +2,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Injectable } from '@angular/core';
 import { EBookStorageService } from './e-book-storage.service';
 import { EBook } from '../models/e-book.model';
-import { BehaviorSubject, catchError, map, of, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, of, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +25,7 @@ export class EBookCollectionService {
   ) {}
 
   loadCollection() {
-    this.storageService.getCollectionFromLocalStorage().pipe(
+    return this.storageService.getCollectionFromLocalStorage().pipe(
       tap(() => this.loadCollectionLoading(true)),
       map((eBooks: EBook[]) => this.loadCollectionSuccess(eBooks)),
       catchError((err: string) => {
@@ -52,52 +52,65 @@ export class EBookCollectionService {
   }
 
   /**
-   * Optimistically add book to collection.
-   * If this succeeds there's nothing to do.
-   * If this fails we revert state by removing the book.
+   * case1: Optimistically(success) Add book to collection,
+   * case2: If removeBook fails, we "undo" adding the book.
    */
-  optimisticallyAddEBookToCollection(newCollectedEBook: EBook) {
-    const collectedEBooks = this._collectedEBooks;
-    const isDuplicatedId = collectedEBooks.some(
-      (oldCollectedEBook) => oldCollectedEBook.id === newCollectedEBook.id
+  optimicallyAddEBook(eBook: EBook) {
+    return this.storageService.addToLocalStorage([eBook]).pipe(
+      tap(() => this.addEBookSuccess(eBook)),
+      catchError(() => {
+        this.removeEBookFailure(eBook);
+        return of([]);
+      })
     );
-
-    if (!isDuplicatedId) {
-      const newCollectedEBooksState = [
-        ...this._collectedEBooks,
-        newCollectedEBook,
-      ];
-
-      this.collectedEBooksSub.next(newCollectedEBooksState);
-    }
-  }
-
-  addEBookToCollection(eBook: EBook) {
-    this.optimisticallyAddEBookToCollection(eBook);
-  }
-
-  removeEBookFromCollectionFailure(eBook: EBook) {
-    this.optimisticallyAddEBookToCollection(eBook);
   }
 
   /**
-   * Optimistically remove book from collection.
-   * If addBook fails, we "undo" adding the book.
+   * case1: Optimistically(success) Remove book from collection,
+   * case2: If addBook fails, we "undo" adding the book.
    */
-  optimisticallyRemoveEBookFromCollection(unCollectedEBook: EBook) {
-    const collectedEBooks = this._collectedEBooks;
-    const newCollectedEBooksState = collectedEBooks?.filter(
-      (collectedEBook) => collectedEBook.id !== unCollectedEBook.id
+  optimicallyRemoveEBook(eBook: EBook) {
+    return this.storageService.removeFromLocalStorage([eBook.id]).pipe(
+      tap(() => this.removeEBookSuccess(eBook)),
+      catchError(() => {
+        this.addEBookFailure(eBook);
+        return of([]);
+      })
+    );
+  }
+
+  addEBookSuccess(collectedEBook: EBook) {
+    this.addEBook(collectedEBook);
+  }
+  removeEBookFailure(unCollectedEBook: EBook) {
+    this.addEBook(unCollectedEBook);
+  }
+
+  addEBookFailure(collectedEBook: EBook) {
+    this.removeEBook(collectedEBook);
+  }
+
+  removeEBookSuccess(unCollectedEBook: EBook) {
+    this.removeEBook(unCollectedEBook);
+  }
+
+  addEBook(eBook: EBook) {
+    const isDuplicatedId = this._collectedEBooks.some(
+      (oldCollectedEBook) => oldCollectedEBook.id === eBook.id
     );
 
-    this.collectedEBooksSub.next(newCollectedEBooksState || []);
+    if (!isDuplicatedId) {
+      const newEBooksState = [...this._collectedEBooks, eBook];
+
+      this.collectedEBooksSub.next(newEBooksState);
+    }
   }
 
-  addEBookToCollectionFailure(eBook: EBook) {
-    this.optimisticallyRemoveEBookFromCollection(eBook);
-  }
+  removeEBook(eBook: EBook) {
+    const newEBooksState = this._collectedEBooks?.filter(
+      (collectedEBook) => collectedEBook.id !== eBook.id
+    );
 
-  removeEBookFromCollection(eBook: EBook) {
-    this.optimisticallyRemoveEBookFromCollection(eBook);
+    this.collectedEBooksSub.next(newEBooksState);
   }
 }

@@ -5,7 +5,7 @@
       *ngIf="tab.isShown"
       mat-tab-link
       [disabled]="tab.isDisabled"
-      [ngStyle]="{ cursor: 'pointer' }"
+      [ngClass]="'mat-tab-link'"
       (click)="activeLink = tab.url"
       [routerLink]="[tab.url]"
       routerLinkActive

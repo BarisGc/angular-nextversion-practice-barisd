@@ -57,6 +57,9 @@ export class FindEBookPageComponent {
     }
   }
 
+  debug(value: any) {
+    console.log(value);
+  }
   // routePractice() {
   //   const fragment = location.hash.substring(1);
   //   const [hash1, hash2] = fragment.split('=');

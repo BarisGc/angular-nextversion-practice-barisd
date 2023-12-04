@@ -41,7 +41,9 @@ export class EBookStorageService {
     return this.getCollectionFromLocalStorage().pipe(
       map((value: EBook[]) => [...value, ...records]),
       tap((value: EBook[]) =>
-        this.storage.setItem(this.collectionKey, JSON.stringify(value))
+        {
+          this.storage.setItem(this.collectionKey, JSON.stringify(value));
+        }
       ),
       catchError((err) => {
         this.toastrService.error(err);

@@ -115,6 +115,7 @@ export class EBookCollectionTableComponent {
       .clearAllCollections()
       .subscribe(() => {
         this.dataSource.data = [];
+        this.selection.clear();
         this.table.renderRows();
       });
     this.masterSubscription.add(clearStream);
@@ -161,7 +162,11 @@ export class EBookCollectionTableComponent {
   }
 
   getReadBooks() {
-    this.eBookCollectionService.getReadBooks().pipe(take(1)).subscribe();
+    this.eBookCollectionService
+      .getReadBooksFromLocalStorage()
+      .pipe(take(1))
+      .subscribe();
+
     const getReadBooksStream$ = this.eBookCollectionService.readBooksIds$
       .pipe(
         tap((ids) => {
@@ -178,12 +183,10 @@ export class EBookCollectionTableComponent {
 
   saveReadEBooks() {
     const readBooksIds = this.selection.selected.map((selected) => selected.id);
-    const setReadBooksStream$ = this.eBookCollectionService
+    this.eBookCollectionService
       .setReadBooks(readBooksIds)
+      .pipe(take(1))
       .subscribe();
-
-    this.masterSubscription.add(setReadBooksStream$);
-    console.log(this.selection);
   }
 
   OnDestroy() {

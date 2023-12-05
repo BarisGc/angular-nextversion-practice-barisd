@@ -53,7 +53,7 @@ export class NavigationTabsComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     // console.log('ngOnInit'); order:3
     this.getInitialState();
-    this.eventChecker();
+    // this.eventChecker(); for practicing
   }
   eventChecker(): void {
     this.router.events
@@ -66,6 +66,7 @@ export class NavigationTabsComponent implements OnInit, OnChanges {
       )
       .subscribe();
   }
+
   getInitialState() {
     this.getSelectedEBooks();
     this.getNavigationTabs();

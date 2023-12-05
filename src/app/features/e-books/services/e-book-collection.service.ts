@@ -31,6 +31,8 @@ export class EBookCollectionService {
 
   clearAllCollections() {
     const ids = this._collectedEBooks.map((eBook) => eBook.id);
+    this.readBooksIdsSub.next([]);
+    this.storageService.saveReadBooksInLocalStorage([]);
     return this.removeEBooks(ids);
   }
 
@@ -138,7 +140,7 @@ export class EBookCollectionService {
     );
   }
 
-  getReadBooks() {
+  getReadBooksFromLocalStorage() {
     return this.eBookStorageService
       .getReadBooksIdsFromLocalStorage()
       .pipe(tap((data) => this.readBooksIdsSub.next(data)));

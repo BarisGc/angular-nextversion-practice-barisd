@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { EBookCollectionService } from '../../services/e-book-collection.service';
 import { Component, OnInit } from '@angular/core';
 import { EBook } from '../../models/e-book.model';
@@ -21,6 +21,6 @@ export class EBookCollectionPageComponent implements OnInit {
     this.collectedEBooks$ = this.eBookCollectionService.collectedEBooks$;
   }
   checkIsCollectionStoraged() {
-    this.eBookCollectionService.loadCollection().subscribe();
+    this.eBookCollectionService.loadCollection().pipe(take(1)).subscribe();
   }
 }

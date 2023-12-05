@@ -55,3 +55,12 @@ tr.example-element-row:not(.example-expanded-row):active {
   font-style: italic;
 }
 
+td, th {
+  text-align: center ;
+  vertical-align: middle ;
+}
+
+// .mat-sort-header-container {
+//   justify-content: center !important;
+// }
+

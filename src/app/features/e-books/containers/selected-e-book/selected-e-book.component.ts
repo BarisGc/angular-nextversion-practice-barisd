@@ -1,8 +1,10 @@
+import { ToastrService } from 'ngx-toastr';
 import { EBookCollectionService } from '../../services/e-book-collection.service';
 import { EBookDataService } from '../../services/e-book-data.service';
 import { Component } from '@angular/core';
 import { EBook } from '../../models/e-book.model';
-import { tap, Subscription } from 'rxjs';
+import { tap, Subscription, finalize, map } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-selected-e-book',
@@ -18,14 +20,22 @@ export class SelectedEBookComponent {
 
   constructor(
     private eBookDataService: EBookDataService,
-    private eBookCollectionService: EBookCollectionService
+    private eBookCollectionService: EBookCollectionService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private toastrService: ToastrService
   ) {}
 
   ngOnInit() {
     this.getInitialState();
+    this.getCollectedEBooks();
   }
 
   getInitialState() {
+    this.getSelectedEBook();
+  }
+
+  getSelectedEBook() {
     const selectedEBookStream = this.eBookDataService.selectedEBook$
       .pipe(
         tap((book) => {
@@ -34,6 +44,10 @@ export class SelectedEBookComponent {
       )
       .subscribe();
 
+    this.masterSubscription.add(selectedEBookStream);
+  }
+
+  getCollectedEBooks() {
     const collectedEBooksStream = this.eBookCollectionService.collectedEBooks$
       .pipe(
         tap((books) => {
@@ -44,21 +58,25 @@ export class SelectedEBookComponent {
         })
       )
       .subscribe();
-
-    this.masterSubscription.add(selectedEBookStream);
     this.masterSubscription.add(collectedEBooksStream);
   }
 
   addToCollection(eBook: EBook) {
     const collectionAddStream$ = this.eBookCollectionService
-      .optimicallyAddEBook(eBook)
+      .addEBooks([eBook])
+      .pipe(
+        map((_) => {
+          this.router.navigate(['/e-books/find']);
+          this.toastrService.success('eBook added to collection');
+        })
+      )
       .subscribe();
     this.masterSubscription.add(collectionAddStream$);
   }
 
   removeFromCollection(eBook: EBook) {
     const collectionRemoveStream$ = this.eBookCollectionService
-      .optimicallyRemoveEBook(eBook)
+      .removeEBooks([eBook.id])
       .subscribe();
     this.masterSubscription.add(collectionRemoveStream$);
   }

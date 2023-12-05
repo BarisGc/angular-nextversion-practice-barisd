@@ -9,20 +9,29 @@ import { BehaviorSubject, Observable, catchError, map, of, tap } from 'rxjs';
 })
 export class EBookCollectionService {
   private collectedEBooksSub = new BehaviorSubject<EBook[]>([]);
-  private loadingSub = new BehaviorSubject<boolean>(false);
-
   collectedEBooks$ = this.collectedEBooksSub.asObservable();
-
   get _collectedEBooks(): EBook[] {
     return this.collectedEBooksSub.getValue();
   }
 
+  private readBooksIdsSub = new BehaviorSubject<string[]>([]);
+  readBooksIds$ = this.readBooksIdsSub.asObservable();
+  get _readBooksIds(): string[] {
+    return this.readBooksIdsSub.getValue();
+  }
+
+  private loadingSub = new BehaviorSubject<boolean>(false);
   loading$ = this.loadingSub.asObservable();
 
   constructor(
     private storageService: EBookStorageService,
     private toastrService: ToastrService
   ) {}
+
+  clearAllCollections() {
+    const ids = this._collectedEBooks.map((eBook) => eBook.id);
+    return this.removeEBooks(ids);
+  }
 
   loadCollection() {
     return this.storageService.getCollectionFromLocalStorage().pipe(
@@ -55,11 +64,11 @@ export class EBookCollectionService {
    * case1: Optimistically(success) Add book to collection,
    * case2: If removeBook fails, we "undo" adding the book.
    */
-  optimicallyAddEBook(eBook: EBook) {
-    return this.storageService.addToLocalStorage([eBook]).pipe(
-      tap(() => this.addEBookSuccess(eBook)),
+  addEBooks(eBooks: EBook[]) {
+    return this.storageService.addToLocalStorage(eBooks).pipe(
+      tap(() => this.addEBookSuccess(eBooks)),
       catchError(() => {
-        this.removeEBookFailure(eBook);
+        this.removeEBookFailure(eBooks);
         return of([]);
       })
     );
@@ -69,48 +78,60 @@ export class EBookCollectionService {
    * case1: Optimistically(success) Remove book from collection,
    * case2: If addBook fails, we "undo" adding the book.
    */
-  optimicallyRemoveEBook(eBook: EBook) {
-    return this.storageService.removeFromLocalStorage([eBook.id]).pipe(
-      tap(() => this.removeEBookSuccess(eBook)),
+  removeEBooks(ids: string[]) {
+    return this.storageService.removeFromLocalStorage(ids).pipe(
+      tap(() => this.removeEBookSuccess(ids)),
       catchError(() => {
-        this.addEBookFailure(eBook);
+        this.addEBookFailure(ids);
         return of([]);
       })
     );
   }
 
-  addEBookSuccess(collectedEBook: EBook) {
-    this.addEBook(collectedEBook);
+  addEBookSuccess(collectedEBooks: EBook[]) {
+    this.optimicallyAddEBook(collectedEBooks);
   }
-  removeEBookFailure(unCollectedEBook: EBook) {
-    this.addEBook(unCollectedEBook);
-  }
-
-  addEBookFailure(collectedEBook: EBook) {
-    this.removeEBook(collectedEBook);
+  removeEBookFailure(unCollectedEBooks: EBook[]) {
+    this.optimicallyAddEBook(unCollectedEBooks);
   }
 
-  removeEBookSuccess(unCollectedEBook: EBook) {
-    this.removeEBook(unCollectedEBook);
+  addEBookFailure(ids: string[]) {
+    this.optimicallyRemoveEBook(ids);
   }
 
-  addEBook(eBook: EBook) {
-    const isDuplicatedId = this._collectedEBooks.some(
-      (oldCollectedEBook) => oldCollectedEBook.id === eBook.id
-    );
-
-    if (!isDuplicatedId) {
-      const newEBooksState = [...this._collectedEBooks, eBook];
-
-      this.collectedEBooksSub.next(newEBooksState);
-    }
+  removeEBookSuccess(ids: string[]) {
+    this.optimicallyRemoveEBook(ids);
   }
 
-  removeEBook(eBook: EBook) {
-    const newEBooksState = this._collectedEBooks?.filter(
-      (collectedEBook) => collectedEBook.id !== eBook.id
-    );
+  optimicallyAddEBook(eBooks: EBook[]) {
+    const ids = new Set(eBooks.map((e) => e.id));
+    const merged = [
+      ...this._collectedEBooks.filter((e) => !ids.has(e.id)),
+      ...eBooks,
+    ];
 
-    this.collectedEBooksSub.next(newEBooksState);
+    this.collectedEBooksSub.next(merged);
+  }
+
+  optimicallyRemoveEBook(removedIds: string[]) {
+    // const newEBooksState = this._collectedEBooks?.filter(
+    //   (collectedEBook) => collectedEBook.id !== eBook.id
+    // );
+
+    // this.collectedEBooksSub.next(newEBooksState);
+
+    const merged = [
+      ...this._collectedEBooks.filter(
+        (eBook) => !removedIds.some((id) => id === eBook.id)
+      ),
+    ];
+
+    this.collectedEBooksSub.next(merged);
+  }
+
+  setReadBooks(ids: string[]) {
+    this.readBooksIdsSub.next(ids);
+
+    return this.readBooksIds$;
   }
 }

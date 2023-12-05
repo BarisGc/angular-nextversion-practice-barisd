@@ -1,4 +1,5 @@
-import { Component, Input } from '@angular/core';
+import { EBookCollectionService } from './../../services/e-book-collection.service';
+import { Component, Input, inject, OnDestroy, ViewChild } from '@angular/core';
 import { EBook } from '../../models/e-book.model';
 import {
   animate,
@@ -7,6 +8,9 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatTable, MatTableDataSource } from '@angular/material/table';
+import { Subscription, tap } from 'rxjs';
 @Component({
   selector: 'app-e-book-collection-table',
   templateUrl: './e-book-collection-table.component.html',
@@ -23,18 +27,29 @@ import {
   ],
 })
 export class EBookCollectionTableComponent {
+  eBookCollectionService = inject(EBookCollectionService);
+  @ViewChild(MatTable) table!: MatTable<any>;
+
   @Input() collectedEBooks!: EBook[];
 
   // Mat Table
-  dataSource!: AllColumns[];
+  dataSource = new MatTableDataSource<DataColumn>([]);
   columnsToDisplay: ColumnsToDisplay = [
     ColumnName.Id,
     ColumnName.Title,
     ColumnName.Authors,
     ColumnName.Publisher,
   ];
-  columnsToDisplayWithExpand = [...this.columnsToDisplay, 'expand'];
-  expandedElement!: AllColumns | null;
+  columnsToDisplayWithAdditions = [
+    ...this.columnsToDisplay,
+    'read',
+    'expand',
+    'delete',
+  ];
+  expandedElement!: DataColumn | null;
+  selection = new SelectionModel<DataColumn>(true, []);
+
+  masterSubscription = new Subscription();
 
   ngOnInit() {
     this.setInitialState();
@@ -45,8 +60,13 @@ export class EBookCollectionTableComponent {
   }
 
   setMatTable() {
-    this.dataSource = this.collectedEBooks.map((eBook) => {
-      let reFactoredEBookElement: AllColumns = {
+    this.getDataSource();
+    this.getReadBooks();
+  }
+
+  getDataSource() {
+    this.dataSource.data = this.collectedEBooks.map((eBook) => {
+      let reFactoredEBookElement: DataColumn = {
         id: eBook.id,
         title: '',
         authors: '',
@@ -89,6 +109,82 @@ export class EBookCollectionTableComponent {
       return reFactoredEBookElement;
     });
   }
+
+  clearAllCollections() {
+    const clearStream = this.eBookCollectionService
+      .clearAllCollections()
+      .subscribe();
+    this.masterSubscription.add(clearStream);
+  }
+
+  removeFromCollection(element: any) {
+    const removeStream = this.eBookCollectionService
+      .removeEBooks([element.id])
+      .pipe()
+      .subscribe(() => {
+        this.dataSource.data = this.dataSource.data.filter(
+          (item) => item.id !== element.id
+        );
+        this.table.renderRows();
+      });
+    this.masterSubscription.add(removeStream);
+  }
+
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  toggleAllRows() {
+    if (this.isAllSelected()) {
+      this.selection.clear();
+      return;
+    }
+
+    this.selection.select(...this.dataSource.data);
+  }
+
+  /** The label for the checkbox on the passed row */
+  checkboxLabel(row?: DataColumn): string {
+    if (!row) {
+      return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+    }
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${
+      row.id + 1
+    }`;
+  }
+
+  getReadBooks() {
+    const getReadBooksStream$ = this.eBookCollectionService.readBooksIds$
+      .pipe(
+        tap((ids) => {
+          this.selection.clear();
+          this.selection.select(
+            ...this.dataSource.data.filter((item) => ids.includes(item.id))
+          );
+        })
+      )
+      .subscribe((data) => {});
+
+    this.masterSubscription.add(getReadBooksStream$);
+  }
+
+  saveReadEBooks() {
+    const readBooksIds = this.selection.selected.map((selected) => selected.id);
+    const setReadBooksStream$ = this.eBookCollectionService
+      .setReadBooks(readBooksIds)
+      .subscribe();
+
+    this.masterSubscription.add(setReadBooksStream$);
+    console.log(this.selection);
+  }
+
+  OnDestroy() {
+    this.masterSubscription.unsubscribe();
+  }
 }
 
 enum ColumnName {
@@ -101,7 +197,7 @@ enum ColumnName {
 }
 
 type ColumnsToDisplay = ColumnName[];
-interface AllColumns {
+interface DataColumn {
   [ColumnName.Id]: string;
   [ColumnName.Title]: string;
   [ColumnName.Authors]: string;

@@ -1,3 +1,4 @@
+import { EBookCollectionService } from './../../features/e-books/services/e-book-collection.service';
 import { EBookNavigationService } from './../../features/e-books/services/e-book-navigation.service';
 import { Observable, Subscription, filter, map, switchMap, tap } from 'rxjs';
 import {
@@ -42,15 +43,15 @@ export class NavigationTabsComponent implements OnInit, OnChanges {
     private eBookDataService: EBookDataService,
     private eBookNavigationService: EBookNavigationService
   ) {
-    console.log('constructor');
+    // console.log('constructor'); order:1
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('ngOnChanges');
+    // console.log('ngOnChanges'); order:2
   }
 
   ngOnInit(): void {
-    console.log('ngOnInit');
+    // console.log('ngOnInit'); order:3
     this.getInitialState();
     this.eventChecker();
   }

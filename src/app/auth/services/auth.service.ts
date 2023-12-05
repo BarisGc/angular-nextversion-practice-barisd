@@ -1,8 +1,15 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  exhaustMap,
+  map,
+  of,
+  throwError,
+} from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { Credentials } from '../models/user';
+import { Credentials, User } from '../models/user';
 import { ToastrService } from 'ngx-toastr';
 import { LogoutConfirmationDialogComponent } from '../components/logout-confirmation-dialog.component';
 
@@ -11,7 +18,7 @@ import { LogoutConfirmationDialogComponent } from '../components/logout-confirma
 })
 export class AuthService {
   authState = {
-    userSub: new BehaviorSubject<Credentials | null>(null),
+    userSub: new BehaviorSubject<User | null>(null),
     pendingSub: new BehaviorSubject<boolean>(false),
     errorSub: new BehaviorSubject<string>(''),
   };
@@ -30,8 +37,8 @@ export class AuthService {
 
   checkUserAccess() {
     // TODO: Better to use jwt & don't use password for access check
-    const credentials = JSON.parse(localStorage.getItem('credentials')!);
-    if (credentials) this.authState.userSub.next(credentials);
+    const user = JSON.parse(localStorage.getItem('user')!);
+    if (user) this.authState.userSub.next(user);
   }
 
   login({ username, password }: Credentials) {
@@ -45,16 +52,27 @@ export class AuthService {
       this.loginFailure('Invalid username or password');
     }
 
-    this.loginSuccess({ username, password });
+    const randomToken =
+      Math.random().toString(36).substring(2) +
+      Date.now().toString(36) +
+      Math.random().toString(36).substring(2);
+
+    this.loginSuccess({ name: username, token: randomToken });
   }
 
   loginPending(isPending: boolean) {
     this.authState.pendingSub.next(isPending);
   }
 
-  loginSuccess(credentials: Credentials) {
-    localStorage.setItem('credentials', JSON.stringify(credentials));
-    this.authState.userSub.next(credentials);
+  loginSuccess(user: User) {
+    localStorage.setItem(
+      'user',
+      JSON.stringify({
+        username: user.name,
+        token: user.token,
+      })
+    );
+    this.authState.userSub.next(user);
     this.router.navigate(['/']);
 
     this.loginPending(false);
@@ -72,23 +90,27 @@ export class AuthService {
 
   logout() {
     this.authState.userSub.next(null);
-    localStorage.removeItem('credentials');
+    localStorage.removeItem('user');
+    this.router.navigate(['login']);
   }
 
   logoutConfirmation() {
-    const dialogRef = this.dialog.open<
-      LogoutConfirmationDialogComponent,
-      undefined,
-      boolean
-    >(LogoutConfirmationDialogComponent);
-
-    const decision = dialogRef.afterClosed();
-    decision ? this.logout() : this.logoutConfirmationDismiss();
+    return of(true).pipe(
+      exhaustMap(() => {
+        const dialogRef = this.dialog.open<
+          LogoutConfirmationDialogComponent,
+          undefined,
+          boolean
+        >(LogoutConfirmationDialogComponent);
+        return dialogRef.afterClosed();
+      }),
+      map((decision) =>
+        decision ? this.logout() : this.logoutConfirmationDismiss()
+      )
+    );
   }
 
   logoutConfirmationDismiss() {
-    this.toastr.info('Logout Confirmation', 'Dismissed', {
-      timeOut: 30000,
-    });
+    this.toastr.info('Logout Confirmation', 'Dismissed');
   }
 }

@@ -1,10 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { LayoutService } from '../services/layout.service';
 import { AuthService } from '../../auth/services/auth.service';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-layout',
   template: `
+    {{ loggedIn }}
     <mat-sidenav-container fullscreen (backdropClick)="closeSidenav()">
       <mat-sidenav
         #sidenav
@@ -84,6 +86,6 @@ export class LayoutComponent {
   }
 
   logout() {
-    this.authService.logoutConfirmation();
+    this.authService.logoutConfirmation().pipe(take(1)).subscribe();
   }
 }

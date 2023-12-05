@@ -43,7 +43,9 @@ export class AppComponent {
   }
 
   checkUserAccess() {
-    this.loggedIn$ = this.authService.user$ ? of(true) : of(false);
+    this.loggedIn$ = this.authService.user$.pipe(
+      map((user) => (user?.name ? true : false))
+    );
   }
 
   checkSidenav() {

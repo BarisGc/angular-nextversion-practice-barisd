@@ -10,7 +10,7 @@ import {
 } from '@angular/animations';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
-import { Subscription, tap } from 'rxjs';
+import { Subscription, take, tap } from 'rxjs';
 @Component({
   selector: 'app-e-book-collection-table',
   templateUrl: './e-book-collection-table.component.html',
@@ -113,7 +113,10 @@ export class EBookCollectionTableComponent {
   clearAllCollections() {
     const clearStream = this.eBookCollectionService
       .clearAllCollections()
-      .subscribe();
+      .subscribe(() => {
+        this.dataSource.data = [];
+        this.table.renderRows();
+      });
     this.masterSubscription.add(clearStream);
   }
 
@@ -158,6 +161,7 @@ export class EBookCollectionTableComponent {
   }
 
   getReadBooks() {
+    this.eBookCollectionService.getReadBooks().pipe(take(1)).subscribe();
     const getReadBooksStream$ = this.eBookCollectionService.readBooksIds$
       .pipe(
         tap((ids) => {
@@ -167,7 +171,7 @@ export class EBookCollectionTableComponent {
           );
         })
       )
-      .subscribe((data) => {});
+      .subscribe();
 
     this.masterSubscription.add(getReadBooksStream$);
   }

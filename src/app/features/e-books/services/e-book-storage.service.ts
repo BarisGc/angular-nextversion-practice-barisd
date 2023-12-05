@@ -18,7 +18,8 @@ export const LOCAL_STORAGE_TOKEN = new InjectionToken(
 
 @Injectable({ providedIn: 'root' })
 export class EBookStorageService {
-  private collectionKey = 'e-books-app-myCollection';
+  private collectionKey = 'e-books-myCollection';
+  private readBooksKey = 'readBooks';
 
   supported(): Observable<boolean> {
     return this.storage !== null
@@ -26,9 +27,9 @@ export class EBookStorageService {
       : throwError(() => 'Local Storage Not Supported');
   }
 
-  getCollectionFromLocalStorage(): Observable<EBook[]> {
+  getFromlocalStorage(key: string) {
     return this.supported().pipe(
-      map((_) => this.storage.getItem(this.collectionKey)),
+      map((_) => this.storage.getItem(key)),
       map((value: string | null) => (value ? JSON.parse(value) : [])),
       catchError((err) => {
         this.toastrService.error(err);
@@ -37,14 +38,20 @@ export class EBookStorageService {
     );
   }
 
+  saveToLocalStorage(key: string, value: any) {
+    this.storage.setItem(key, JSON.stringify(value));
+  }
+
+  getCollectionFromLocalStorage(): Observable<EBook[]> {
+    return this.getFromlocalStorage(this.collectionKey);
+  }
+
   addToLocalStorage(records: EBook[]): Observable<EBook[]> {
     return this.getCollectionFromLocalStorage().pipe(
       map((value: EBook[]) => [...value, ...records]),
-      tap((value: EBook[]) =>
-        {
-          this.storage.setItem(this.collectionKey, JSON.stringify(value));
-        }
-      ),
+      tap((value: EBook[]) => {
+        this.saveToLocalStorage(this.collectionKey, value);
+      }),
       catchError((err) => {
         this.toastrService.error(err);
         return of([]);
@@ -63,6 +70,14 @@ export class EBookStorageService {
         return of([]);
       })
     );
+  }
+
+  saveReadBooksInLocalStorage(ids: Array<string>) {
+    this.saveToLocalStorage(this.readBooksKey, ids);
+  }
+
+  getReadBooksIdsFromLocalStorage(): Observable<string[]> {
+    return this.getFromlocalStorage(this.readBooksKey);
   }
 
   deleteKeyFromLocalStorage(): Observable<boolean> {

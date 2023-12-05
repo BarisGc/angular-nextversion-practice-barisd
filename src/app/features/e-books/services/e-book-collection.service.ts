@@ -25,7 +25,8 @@ export class EBookCollectionService {
 
   constructor(
     private storageService: EBookStorageService,
-    private toastrService: ToastrService
+    private toastrService: ToastrService,
+    private eBookStorageService: EBookStorageService
   ) {}
 
   clearAllCollections() {
@@ -132,6 +133,14 @@ export class EBookCollectionService {
   setReadBooks(ids: string[]) {
     this.readBooksIdsSub.next(ids);
 
-    return this.readBooksIds$;
+    return this.readBooksIds$.pipe(
+      tap((data) => this.eBookStorageService.saveReadBooksInLocalStorage(data))
+    );
+  }
+
+  getReadBooks() {
+    return this.eBookStorageService
+      .getReadBooksIdsFromLocalStorage()
+      .pipe(tap((data) => this.readBooksIdsSub.next(data)));
   }
 }

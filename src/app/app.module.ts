@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ToastrModule } from 'ngx-toastr';
-import { CommonModule } from '@angular/common';
+import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { AppComponent } from './core/containers';
 import { HttpClientModule } from '@angular/common/http';
 import { MaterialModule } from './material/material.module';
@@ -30,6 +30,12 @@ import { SharedModule } from './shared/shared.module';
     CoreModule,
     AuthModule,
     AppRoutingModule,
+  ],
+  providers: [
+    {
+      provide: APP_BASE_HREF,
+      useValue: '/angular-next',
+    },
   ],
   bootstrap: [AppComponent],
 })

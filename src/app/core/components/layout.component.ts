@@ -6,7 +6,6 @@ import { take } from 'rxjs';
 @Component({
   selector: 'app-layout',
   template: `
-    {{ loggedIn }}
     <mat-sidenav-container fullscreen (backdropClick)="closeSidenav()">
       <mat-sidenav
         #sidenav

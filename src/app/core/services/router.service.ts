@@ -10,8 +10,7 @@ import {
   NavigationStart,
   Router,
 } from '@angular/router';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { LayoutService } from './layout.service';
+import { BehaviorSubject, Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })

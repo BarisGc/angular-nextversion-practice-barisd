@@ -1,16 +1,11 @@
-import {
-  Component,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-} from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { EBook } from '../../models/e-book.model';
 
 @Component({
   selector: 'app-e-book-preview',
   templateUrl: './e-book-preview.component.html',
   styleUrls: ['./e-book-preview.component.scss'],
+  providers: [],
 })
 export class EBookPreviewComponent {
   @Input() eBook!: EBook;

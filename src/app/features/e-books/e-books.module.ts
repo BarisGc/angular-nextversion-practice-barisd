@@ -17,6 +17,7 @@ import { StoredEBooksPageComponent } from './containers/stored-e-books-page/stor
 import { ViewEBookPageComponent } from './containers/view-e-book-page/view-e-book-page.component';
 import { EBooksRoutingModule } from './e-books-routing.module';
 import { MaterialModule } from '../../material/material.module';
+import { NgOptimizedImage } from '@angular/common';
 
 export const COMPONENTS = [
   SelectedEBookComponent,
@@ -45,6 +46,7 @@ export const CONTAINERS = [
     NavigationTabsModule,
     PipesModule,
     MaterialModule,
+    NgOptimizedImage,
   ],
 })
 export class EBooksModule {}

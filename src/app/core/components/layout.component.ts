@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { LayoutService } from '../services/layout.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { take } from 'rxjs';
@@ -16,10 +16,34 @@ import { take } from 'rxjs';
           <app-nav-item
             (navigate)="closeSidenav()"
             *ngIf="loggedIn"
+            routerLink="admin-dash"
+            icon="admin_panel_settings"
+          >
+            Admin Dash
+          </app-nav-item>
+          <app-nav-item
+            (navigate)="closeSidenav()"
+            *ngIf="loggedIn"
+            routerLink="user-dash"
+            icon="dashboard"
+          >
+            User Dash
+          </app-nav-item>
+          <app-nav-item
+            (navigate)="closeSidenav()"
+            *ngIf="loggedIn"
             routerLink="e-books"
             icon="library_books"
           >
             E-Books
+          </app-nav-item>
+          <app-nav-item
+            (navigate)="closeSidenav()"
+            *ngIf="loggedIn"
+            routerLink="product"
+            icon="shopping_cart"
+          >
+            Product
           </app-nav-item>
           <app-nav-item
             *ngIf="!loggedIn"

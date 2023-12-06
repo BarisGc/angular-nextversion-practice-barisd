@@ -19,6 +19,14 @@ const routes: Routes = [
     title: 'E-Books',
   },
   {
+    path: 'product',
+    loadChildren: () =>
+      import('./features/product/product.routes').then(
+        (mod) => mod.PRODUCT_ROUTES
+      ),
+    title: 'Product',
+  },
+  {
     path: '**',
     component: NotFoundPageComponent,
     title: 'Not found',

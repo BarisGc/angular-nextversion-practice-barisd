@@ -117,12 +117,6 @@ export class EBookCollectionService {
   }
 
   optimicallyRemoveEBook(removedIds: string[]) {
-    // const newEBooksState = this._collectedEBooks?.filter(
-    //   (collectedEBook) => collectedEBook.id !== eBook.id
-    // );
-
-    // this.collectedEBooksSub.next(newEBooksState);
-
     const merged = [
       ...this._collectedEBooks.filter(
         (eBook) => !removedIds.some((id) => id === eBook.id)

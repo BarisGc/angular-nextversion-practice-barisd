@@ -126,10 +126,19 @@ export class EBookCollectionTableComponent {
       .removeEBooks([element.id])
       .pipe()
       .subscribe(() => {
-        this.dataSource.data = this.dataSource.data.filter(
+        const newData = this.dataSource.data.filter(
           (item) => item.id !== element.id
         );
-        this.table.renderRows();
+        this.dataSource.data = newData;
+
+        const newSelectData = this.selection.selected.filter(
+          (select) => select.id !== element.id
+        );
+        this.selection.select(...newSelectData);
+
+        const newSelectDataIds = newSelectData.map((item) => item.id);
+        this.eBookCollectionService.setReadBooks(newSelectDataIds);
+        // this.table.renderRows();
       });
     this.masterSubscription.add(removeStream);
   }

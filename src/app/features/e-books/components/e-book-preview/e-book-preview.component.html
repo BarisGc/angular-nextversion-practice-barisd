@@ -2,17 +2,19 @@
   <mat-card>
     <mat-card-title-group>
       <!-- NgOptimizedImage warnings will not appear to you in production mode. -->
-      <img
-        mat-card-sm-image
-        *ngIf="thumbnail"
-        [alt]="title"
-        [ngSrc]="thumbnail"
-        width="200" height="100"
-        priority
-      />
-      <mat-card-title>{{ title | ellipsis : 35 }}</mat-card-title>
+      <span style="width: 75px; height: 100px; position: relative">
+        <img
+          mat-card-sm-image
+          *ngIf="thumbnail"
+          [alt]="title"
+          [ngSrc]="thumbnail"
+          fill
+          priority
+        />
+      </span>
+      <mat-card-title>{{ title | ellipsis: 35 }}</mat-card-title>
       <mat-card-subtitle *ngIf="subtitle">{{
-        subtitle | ellipsis : 40
+        subtitle | ellipsis: 40
       }}</mat-card-subtitle>
     </mat-card-title-group>
     <mat-card-content>

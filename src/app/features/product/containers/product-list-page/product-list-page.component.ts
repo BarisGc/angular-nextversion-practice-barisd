@@ -1,5 +1,5 @@
 import { ProductDataService } from './../../services/product-data.service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription, map, of, tap } from 'rxjs';
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { ProductListComponent } from '../../components/product-list/product-list.component';
 import { Product } from '../../models/product';
@@ -18,18 +18,24 @@ const DIRECTIVES = [NgClass];
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 1rem 10rem 10rem 10rem;
+        padding: 1rem 10rem 0rem 10rem;
       }
     `,
   ],
   template: `<div [ngClass]="'listContainer'">
-    <app-product-list [products]="(products$ | async)!" />
+    <app-product-list
+      [products]="(products$ | async)!"
+      [isLoading]="(isLoading$ | async)!"
+    />
   </div>`,
 })
 export class ProductListPageComponent implements OnInit, OnDestroy {
   products$!: Observable<Product[]>;
+  isLoading$: Observable<boolean> = of(true);
 
   productDataService = inject(ProductDataService);
+
+  masterSubscription = new Subscription();
 
   ngOnInit() {
     this.setInitialState();
@@ -40,9 +46,20 @@ export class ProductListPageComponent implements OnInit, OnDestroy {
   }
 
   getProducts() {
-    this.products$ = this.productDataService.getProducts();
-    this.productDataService.getProducts().subscribe();
+    this.isLoading$ = this.productDataService.isLoading$;
+    const productsStream$ = this.productDataService
+      .getProducts()
+      .pipe(
+        tap((products) => {
+          this.products$ = of(products);
+        })
+      )
+      .subscribe();
+
+    this.masterSubscription.add(productsStream$);
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() {
+    this.masterSubscription.unsubscribe();
+  }
 }

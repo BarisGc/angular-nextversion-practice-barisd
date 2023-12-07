@@ -65,7 +65,7 @@ import { take } from 'rxjs';
         ><span
           [ngStyle]="{ marginLeft: '1rem', cursor: 'pointer' }"
           routerLink="/"
-          >E-Book Module</span
+          >Angular Next Practices</span
         ></app-toolbar
       >
       <div class="spinner-container" *ngIf="loading">

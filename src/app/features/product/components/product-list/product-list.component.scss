@@ -1,8 +1,36 @@
-td, th {
-  text-align: center ;
-  vertical-align: middle ;
+td,
+th {
+  text-align: center;
+  vertical-align: middle;
 }
 
 tr.mat-mdc-footer-row td {
   font-weight: bold;
 }
+
+.mat-column-id {
+  width: 32px;
+  border-right: 1px solid currentColor;
+  padding-right: 24px;
+  text-align: center;
+}
+
+/* Structure */
+
+table {
+  width: 55%;
+}
+
+.mat-mdc-form-field {
+  font-size: 14px;
+  width: 100%;
+}
+
+section {
+  overflow: auto;
+  position: relative;
+  min-height: 25vh;
+  max-height: 60vh;
+  width: 50vw;
+}
+

@@ -1,13 +1,32 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild, inject } from '@angular/core';
 import { ProductItemComponent } from '../product-item/product-item.component';
 import { Product } from '../../models/product';
 import { JsonPipe, NgOptimizedImage } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
-
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import {
+  CdkDragDrop,
+  CdkDrag,
+  CdkDropList,
+  moveItemInArray,
+} from '@angular/cdk/drag-drop';
 const PIPES = [JsonPipe];
 const COMPONENTS = [ProductItemComponent];
-const MODULES = [MatTableModule];
-const DIRECTIVES: any = [NgOptimizedImage];
+const MODULES = [
+  MatTableModule,
+  MatProgressSpinnerModule,
+  MatSortModule,
+  MatPaginatorModule,
+  MatFormFieldModule,
+  MatInputModule,
+  CdkDropList,
+  CdkDrag,
+];
+const DIRECTIVES = [NgOptimizedImage];
 @Component({
   selector: 'app-product-list',
   standalone: true,
@@ -16,15 +35,41 @@ const DIRECTIVES: any = [NgOptimizedImage];
   styleUrl: './product-list.component.scss',
 })
 export class ProductListComponent {
-  @Input() products: Product[] = [];
+  dataSource: MatTableDataSource<Product> = new MatTableDataSource();
+
+  @Input() set products(value: Product[]) {
+    this.dataSource.data = value;
+  }
+  @Input({ required: true }) isLoading = true;
+
+  @ViewChild(MatSort) sort!: MatSort;
 
   columns = this.setColumns();
   displayedColumns = this.setDisplayedColumns();
+  stickyStartColumns = ['id'];
+  stickyEndColumns = ['stock', 'thumbnail'];
 
   getTotalStock() {
-    return this.products
+    return this.dataSource.data
       .map((t) => t.stock)
       .reduce((acc, value) => acc + value, 0);
+  }
+
+  setDisplayedColumns() {
+    return this.setColumns().map((c) => c.columnDef);
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  drop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.columns, event.previousIndex, event.currentIndex);
   }
 
   setColumns() {
@@ -83,8 +128,5 @@ export class ProductListComponent {
       },
     ];
     return columns;
-  }
-  setDisplayedColumns() {
-    return this.setColumns().map((c) => c.columnDef);
   }
 }

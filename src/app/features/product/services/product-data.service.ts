@@ -1,5 +1,6 @@
+import { ToastrService } from 'ngx-toastr';
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, shareReplay, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, finalize, of, shareReplay, tap } from 'rxjs';
 import { Product } from '../models/product';
 import { ProductApiService } from './product-api.service';
 
@@ -13,11 +14,26 @@ export class ProductDataService {
     return this.productsSub.getValue();
   }
 
-  productApiService = inject(ProductApiService);
+  private isLoadingSub = new BehaviorSubject<boolean>(true);
+  isLoading$ = this.isLoadingSub.asObservable();
+  get _isLoading(): boolean {
+    return this.isLoadingSub.getValue();
+  }
 
-  getProducts() {
+  productApiService = inject(ProductApiService);
+  toastrService = inject(ToastrService);
+
+  getProducts(): Observable<Product[]> {
+    this.isLoadingSub.next(true);
     return this.productApiService.fetchProducts().pipe(
-      tap((data) => this.productsSub.next(data)),
+      tap((data) => {
+        this.productsSub.next(data);
+      }),
+      catchError((err) => {
+        this.toastrService.error(err);
+        return of([]);
+      }),
+      finalize(() => this.isLoadingSub.next(false)),
       shareReplay(1)
     );
   }

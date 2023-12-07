@@ -116,7 +116,6 @@ export class EBookCollectionTableComponent {
       .subscribe(() => {
         this.dataSource.data = [];
         this.selection.clear();
-        this.table.renderRows();
       });
     this.masterSubscription.add(clearStream);
   }

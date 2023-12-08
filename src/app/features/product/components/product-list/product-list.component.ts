@@ -1,11 +1,15 @@
 import { Component, Input, ViewChild, inject } from '@angular/core';
 import { ProductItemComponent } from '../product-item/product-item.component';
 import { Product } from '../../models/product';
-import { JsonPipe, NgOptimizedImage } from '@angular/common';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { CommonModule, JsonPipe, NgOptimizedImage } from '@angular/common';
+import {
+  MatTable,
+  MatTableDataSource,
+  MatTableModule,
+} from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {
@@ -25,6 +29,7 @@ const MODULES = [
   MatInputModule,
   CdkDropList,
   CdkDrag,
+  CommonModule,
 ];
 const DIRECTIVES = [NgOptimizedImage];
 @Component({
@@ -42,7 +47,12 @@ export class ProductListComponent {
   }
   @Input({ required: true }) isLoading = true;
 
-  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatSort) set matSort(sort: MatSort) {
+    if (!this.dataSource.sort) {
+      this.dataSource.sort = sort;
+    }
+  }
+  @ViewChild(MatTable) matTable!: MatTable<any>;
 
   columns = this.setColumns();
   displayedColumns = this.setDisplayedColumns();
@@ -59,10 +69,6 @@ export class ProductListComponent {
     return this.setColumns().map((c) => c.columnDef);
   }
 
-  ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
-  }
-
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -72,6 +78,9 @@ export class ProductListComponent {
     moveItemInArray(this.columns, event.previousIndex, event.currentIndex);
   }
 
+  ngAfterViewInit() {
+    this.dataSource.sort = this.matSort;
+  }
   setColumns() {
     const columns = [
       {

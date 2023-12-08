@@ -15,22 +15,24 @@ tr.mat-mdc-footer-row td {
   text-align: center;
 }
 
-/* Structure */
-
-table {
-  width: 55%;
-}
-
 .mat-mdc-form-field {
   font-size: 14px;
   width: 100%;
 }
 
+
+
+// .nodata {
+//   height: 100%;
+// }
+
 section {
   overflow: auto;
   position: relative;
-  min-height: 25vh;
-  max-height: 60vh;
+  height: 60vh;
   width: 50vw;
-}
 
+}
+table {
+ height: 100%;
+}

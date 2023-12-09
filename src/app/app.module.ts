@@ -5,16 +5,15 @@ import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ToastrModule } from 'ngx-toastr';
-import { APP_BASE_HREF, CommonModule } from '@angular/common';
+import { APP_BASE_HREF } from '@angular/common';
 import { AppComponent } from './core/containers';
 import { HttpClientModule } from '@angular/common/http';
-import { MaterialModule } from './material/material.module';
 import { CoreModule } from './core/core.module';
 import { AuthModule } from './auth/auth.module';
 import { SharedModule } from './shared/shared.module';
 @NgModule({
   imports: [
-    // TODO: is commonmodule necessary?
+    // TODO: is commonmodule necessary? check if you can delete all commonmodules
     SharedModule,
     BrowserModule,
     BrowserAnimationsModule, // required animations module
@@ -38,5 +37,6 @@ import { SharedModule } from './shared/shared.module';
     },
   ],
   bootstrap: [AppComponent],
+  declarations: [],
 })
 export class AppModule {}

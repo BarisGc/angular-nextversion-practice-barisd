@@ -1,38 +1,34 @@
-import { EBookCollectionService } from './../../features/e-books/services/e-book-collection.service';
-import { EBookNavigationService } from './../../features/e-books/services/e-book-navigation.service';
-import { Observable, Subscription, filter, map, switchMap, tap } from 'rxjs';
-import {
-  Component,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-} from '@angular/core';
+import { Observable, Subscription, filter, tap } from 'rxjs';
+import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import {
   ActivatedRoute,
   NavigationEnd,
   Router,
   RouterEvent,
   Event,
+  RouterModule,
 } from '@angular/router';
-import { NavigationTab } from '../../features/e-books/models/e-book-navigation-tab';
 import { EBook } from '../../features/e-books/models/e-book.model';
 import { EBookDataService } from '../../features/e-books/services/e-book-data.service';
+import { MaterialModule } from '../../material/material.module';
+import { SharedModule } from '../shared.module';
+import { NavigationTabsService } from '../services/navigation-tabs.service';
+import { NavigationTab } from '../models/navigation-tab';
 
+const MODULES = [SharedModule, MaterialModule, RouterModule];
 @Component({
   selector: 'app-navigation-tabs',
+  standalone: true, // Note: Hybrid Usage(Standalone + Module) for practicing intentions
+  imports: [...MODULES],
   templateUrl: './navigation-tabs.component.html',
   styleUrls: ['./navigation-tabs.component.scss'],
 })
 export class NavigationTabsComponent implements OnInit, OnChanges {
   // #navigationTabs
-  activeLink = 'stored';
+  activeLink = '';
   navigationTabs!: NavigationTab[];
 
   selectedEBook$!: Observable<EBook | null>;
-  previousUrl: string = '';
-  currentUrl: string = '';
-  ebookViewDetailLink = '';
 
   masterSubscription = new Subscription();
 
@@ -41,7 +37,7 @@ export class NavigationTabsComponent implements OnInit, OnChanges {
     private route: ActivatedRoute,
     private router: Router,
     private eBookDataService: EBookDataService,
-    private eBookNavigationService: EBookNavigationService
+    private navigationTabsService: NavigationTabsService
   ) {
     // console.log('constructor'); order:1
   }
@@ -77,7 +73,7 @@ export class NavigationTabsComponent implements OnInit, OnChanges {
   }
 
   getNavigationTabs() {
-    const navigationTabsStream = this.eBookNavigationService.navigationTabs$
+    const navigationTabsStream = this.navigationTabsService.navigationTabs$
       .pipe(tap((tabs) => (this.navigationTabs = tabs)))
       .subscribe();
 

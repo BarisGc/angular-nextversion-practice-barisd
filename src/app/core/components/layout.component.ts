@@ -18,6 +18,7 @@ import { take } from 'rxjs';
             *ngIf="loggedIn"
             routerLink="admin-dash"
             icon="admin_panel_settings"
+            hint1="Not implemented"
           >
             Admin Dash
           </app-nav-item>
@@ -26,6 +27,7 @@ import { take } from 'rxjs';
             *ngIf="loggedIn"
             routerLink="user-dash"
             icon="dashboard"
+            hint1="Not implemented"
           >
             User Dash
           </app-nav-item>
@@ -44,6 +46,15 @@ import { take } from 'rxjs';
             icon="shopping_cart"
           >
             Product
+          </app-nav-item>
+          <app-nav-item
+            (navigate)="closeSidenav()"
+            *ngIf="loggedIn"
+            routerLink="commits"
+            icon="commit"
+            hint1="Popular Navigation Methods:"
+            hint2="Pagination, Infinite, Load More"
+            >Commits
           </app-nav-item>
           <app-nav-item
             *ngIf="!loggedIn"

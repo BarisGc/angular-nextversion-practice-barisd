@@ -27,6 +27,14 @@ const routes: Routes = [
     title: 'Product',
   },
   {
+    path: 'commits',
+    loadChildren: () =>
+      import('./features/commits/commit.routes').then(
+        (mod) => mod.COMMIT_ROUTES
+      ),
+    title: 'Commits',
+  },
+  {
     path: '**',
     component: NotFoundPageComponent,
     title: 'Not found',

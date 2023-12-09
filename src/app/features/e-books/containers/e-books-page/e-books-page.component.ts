@@ -1,11 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Observable, Subject, of, takeUntil, tap } from 'rxjs';
-import { NavigationTab } from '../../models/e-book-navigation-tab';
-import { EBookNavigationService } from '../../services/e-book-navigation.service';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-e-books-page',
-  templateUrl: './e-books-page.component.html',
-  styleUrls: ['./e-books-page.component.scss'],
+  styles: [],
+  template: ` <app-e-books-tabs><router-outlet /></app-e-books-tabs> `,
 })
 export class EBooksPageComponent {}

@@ -1,10 +1,10 @@
 import { EBookCollectionService } from '../../services/e-book-collection.service';
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { concatMap, map, tap, switchMap, Subscription } from 'rxjs';
-import { NavigationTab } from '../../models/e-book-navigation-tab';
+import { map, tap, switchMap, Subscription, Observable, of } from 'rxjs';
 import { EBookDataService } from '../../services/e-book-data.service';
-import { EBookNavigationService } from '../../services/e-book-navigation.service';
+import { NavigationTab } from '../../../../shared/models/navigation-tab';
+import { NavigationTabsService } from '../../../../shared/services/navigation-tabs.service';
 import { EBook } from '../../models/e-book.model';
 @Component({
   selector: 'app-view-e-book-page',
@@ -13,20 +13,22 @@ import { EBook } from '../../models/e-book.model';
 })
 export class ViewEBookPageComponent {
   params = this.route.snapshot.params;
-  dynamicTab: NavigationTab = {
-    name: `view/${this.params['id']}`,
+  viewTab: NavigationTab = {
+    name: ``,
     url: `view/${this.params['id']}`,
     isShown: true,
     isDisabled: true,
     isActive: true,
   };
 
+  selectedEBook$!: Observable<EBook | null>;
+
   masterSubscription = new Subscription();
 
   constructor(
     private route: ActivatedRoute,
     private eBookDataService: EBookDataService,
-    private eBookNavigationService: EBookNavigationService,
+    private navigationTabsService: NavigationTabsService,
     private eBookCollectionService: EBookCollectionService
   ) {}
 
@@ -39,28 +41,43 @@ export class ViewEBookPageComponent {
   }
 
   enterPage() {
-    const stream1 = this.route.params
+    const selectedEBookStream = this.eBookDataService.selectedEBook$
       .pipe(
-        tap((params) => {
-          this.eBookDataService.selectEBook(params['id']);
-          this.eBookNavigationService.addTab(this.dynamicTab);
+        tap((book) => {
+          const viewTabName = book
+            ? book.volumeInfo.title + ' - ' + 'Collected!'
+            : 'No Book Title';
+          this.viewTab.name = viewTabName;
+          this.selectedEBook$ = of(book);
         })
       )
       .subscribe();
-    this.masterSubscription.add(stream1);
+
+    this.masterSubscription.add(selectedEBookStream);
+
+    const routeStream = this.route.params
+      .pipe(
+        tap((params) => {
+          this.eBookDataService.selectEBook(params['id']);
+          this.navigationTabsService.addTabs([this.viewTab]);
+        })
+      )
+      .subscribe();
+    this.masterSubscription.add(routeStream);
   }
 
-  setDynamicTabs() {
+  setViewTab() {
     const collectedEBooks$ = this.eBookCollectionService.collectedEBooks$;
     const selectedEBook$ = this.eBookDataService.selectedEBook$;
 
     const isSelectedEBookInCollection$ = selectedEBook$.pipe(
       switchMap((selectedEBook) =>
         collectedEBooks$.pipe(
-          map((collectedEBooks) =>
-            collectedEBooks?.some(
-              (collectedEBook) => collectedEBook.id === selectedEBook?.id
-            )
+          map(
+            (collectedEBooks) =>
+              collectedEBooks?.some(
+                (collectedEBook) => collectedEBook.id === selectedEBook?.id
+              )
           )
         )
       )
@@ -71,13 +88,13 @@ export class ViewEBookPageComponent {
       .pipe(
         tap((isCollected) => {
           if (!isCollected) {
-            this.eBookNavigationService.removeTab(this.dynamicTab);
+            this.navigationTabsService.removeTabs([this.viewTab]);
             // TODO: check if this ends tap execution
             return;
           }
 
-          this.eBookNavigationService.updateTab({
-            ...this.dynamicTab,
+          this.navigationTabsService.updateTab({
+            ...this.viewTab,
             isDisabled: false,
           });
         })
@@ -87,7 +104,7 @@ export class ViewEBookPageComponent {
   }
 
   ngOnDestroy() {
-    this.setDynamicTabs();
+    this.setViewTab();
     this.masterSubscription.unsubscribe();
   }
 }

@@ -47,6 +47,8 @@ export class ProductListComponent {
   }
   @Input({ required: true }) isLoading = true;
 
+  // If the table is inside *ngIf, it won't be working. It will work if it is changed to [hidden]
+  // Alternative: use setter
   @ViewChild(MatSort) set matSort(sort: MatSort) {
     if (!this.dataSource.sort) {
       this.dataSource.sort = sort;
@@ -78,9 +80,6 @@ export class ProductListComponent {
     moveItemInArray(this.columns, event.previousIndex, event.currentIndex);
   }
 
-  ngAfterViewInit() {
-    this.dataSource.sort = this.matSort;
-  }
   setColumns() {
     const columns = [
       {

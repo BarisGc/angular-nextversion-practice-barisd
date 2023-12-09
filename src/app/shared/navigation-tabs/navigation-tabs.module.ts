@@ -1,12 +1,11 @@
 import { NgModule } from '@angular/core';
 import { NavigationTabsComponent } from './navigation-tabs.component';
-import { SharedModule } from '../shared.module';
-import { MaterialModule } from '../../material/material.module';
-import { RouterModule } from '@angular/router';
 
+
+// Note: Hybrid Usage(Standalone + Module) for practicing intentions
 @NgModule({
-  declarations: [NavigationTabsComponent],
-  imports: [SharedModule, MaterialModule, RouterModule],
+  declarations: [],
+  imports: [NavigationTabsComponent],
   exports: [NavigationTabsComponent],
 })
 export class NavigationTabsModule {}

@@ -1,7 +1,7 @@
 import { ToastrService } from 'ngx-toastr';
 import { EBookCollectionService } from '../../services/e-book-collection.service';
 import { EBookDataService } from '../../services/e-book-data.service';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { EBook } from '../../models/e-book.model';
 import { tap, Subscription, finalize, map } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,7 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./selected-e-book.component.scss'],
 })
 export class SelectedEBookComponent {
-  selectedEBook!: EBook;
+  @Input() selectedEBook!: EBook | null;
   collectedEBooks!: EBook[];
   isSelectedBookInCollection!: boolean;
 
@@ -28,23 +28,10 @@ export class SelectedEBookComponent {
 
   ngOnInit() {
     this.getInitialState();
-    this.getCollectedEBooks();
   }
 
   getInitialState() {
-    this.getSelectedEBook();
-  }
-
-  getSelectedEBook() {
-    const selectedEBookStream = this.eBookDataService.selectedEBook$
-      .pipe(
-        tap((book) => {
-          this.selectedEBook = book as EBook;
-        })
-      )
-      .subscribe();
-
-    this.masterSubscription.add(selectedEBookStream);
+    this.getCollectedEBooks();
   }
 
   getCollectedEBooks() {
@@ -53,7 +40,7 @@ export class SelectedEBookComponent {
         tap((books) => {
           this.collectedEBooks = books;
           this.isSelectedBookInCollection = this.collectedEBooks.some(
-            (eBook) => eBook.id === this.selectedEBook.id
+            (eBook) => eBook.id === this.selectedEBook?.id
           );
         })
       )

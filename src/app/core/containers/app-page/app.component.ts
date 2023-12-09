@@ -1,18 +1,9 @@
 import { Component } from '@angular/core';
-import {
-  NavigationStart,
-  NavigationEnd,
-  NavigationCancel,
-  NavigationError,
-  Router,
-  ActivatedRoute,
-  Data,
-} from '@angular/router';
-import { Observable, filter, map, of, tap } from 'rxjs';
+import { Observable, map, of } from 'rxjs';
 import { AuthService } from '../../../auth/services/auth.service';
 import { LayoutService } from '../../services/layout.service';
-import { EBookNavigationService } from '../../../features/e-books/services/e-book-navigation.service';
 import { RouterService } from '../../services/router.service';
+import { isDevMode } from '@angular/core';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -25,13 +16,13 @@ export class AppComponent {
   loggedIn$: Observable<boolean> = of(false);
 
   constructor(
-    private router: Router,
     private authService: AuthService,
     private layoutService: LayoutService,
     private routerService: RouterService
   ) {
     this.showSidenav$ = of(false);
     this.loggedIn$ = of(false);
+    console.log('isDevMode: ', isDevMode());
   }
 
   ngOnInit() {

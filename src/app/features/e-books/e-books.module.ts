@@ -18,6 +18,7 @@ import { ViewEBookPageComponent } from './containers/view-e-book-page/view-e-boo
 import { EBooksRoutingModule } from './e-books-routing.module';
 import { MaterialModule } from '../../material/material.module';
 import { NgOptimizedImage } from '@angular/common';
+import { EBooksTabsComponent } from './containers/e-books-tabs/e-books-tabs.component';
 
 export const COMPONENTS = [
   SelectedEBookComponent,
@@ -28,6 +29,7 @@ export const COMPONENTS = [
   EBookSearchComponent,
   EBookCollectionTableComponent,
   EBookCollectionItemComponent,
+  EBooksTabsComponent,
 ];
 
 export const CONTAINERS = [

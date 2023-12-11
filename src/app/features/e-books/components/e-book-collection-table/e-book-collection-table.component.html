@@ -10,6 +10,7 @@
   multiTemplateDataRows
   class="mat-elevation-z8"
 >
+<!-- TODO: implement trackby -->
   <ng-container
     matColumnDef="{{ column }}"
     *ngFor="let column of columnsToDisplay"
@@ -21,11 +22,15 @@
   </ng-container>
   <ng-container matColumnDef="read">
     <th mat-header-cell *matHeaderCellDef>
-      <mat-checkbox (click)="saveReadEBooks()" (change)="$event ? toggleAllRows() : null"
+
+      <div class="flex flex-column gap-0 py-2">
+        <label for="readBox">Read?</label>
+      <mat-checkbox id="readBox" (click)="saveReadEBooks()" (change)="$event ? toggleAllRows() : null"
                     [checked]="selection.hasValue() && isAllSelected()"
                     [indeterminate]="selection.hasValue() && !isAllSelected()"
                     [aria-label]="checkboxLabel()">
       </mat-checkbox>
+      </div>
     </th>
     <td mat-cell *matCellDef="let row">
       <mat-checkbox (click)="saveReadEBooks()"

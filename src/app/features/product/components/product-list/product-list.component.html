@@ -6,20 +6,28 @@
         <input
           matInput
           (keyup)="applyFilter($event)"
-          placeholder="Ex. Mia"
+          placeholder="Book"
           #input
         />
       </mat-form-field>
 
       <section tabindex="0">
-        <table mat-table matSort [dataSource]="dataSource">
+        <table
+          mat-table
+          matSort
+          [dataSource]="dataSource"
+          cdkDropList
+          cdkDropListOrientation="horizontal"
+          (cdkDropListDropped)="drop($event)"
+        >
+        <!-- TODO: Check if track implemented properly -->
           @for (column of columns; track column) {
             <ng-container
               [matColumnDef]="column.columnDef"
               [sticky]="stickyStartColumns.indexOf(column.columnDef) !== -1"
               [stickyEnd]="stickyEndColumns.indexOf(column.columnDef) !== -1"
             >
-              <th mat-header-cell mat-sort-header *matHeaderCellDef>
+              <th cdkDrag mat-header-cell mat-sort-header *matHeaderCellDef>
                 {{ column.header }}
               </th>
 

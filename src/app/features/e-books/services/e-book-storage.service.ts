@@ -1,6 +1,6 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, throwError, EMPTY } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
 import { EBook } from '../models/e-book.model';
 import { ToastrService } from 'ngx-toastr';
@@ -33,7 +33,7 @@ export class EBookStorageService {
       map((value: string | null) => (value ? JSON.parse(value) : [])),
       catchError((err) => {
         this.toastrService.error(err);
-        return of([]);
+        return EMPTY;
       })
     );
   }
@@ -54,7 +54,7 @@ export class EBookStorageService {
       }),
       catchError((err) => {
         this.toastrService.error(err);
-        return of([]);
+        return EMPTY;
       })
     );
   }
@@ -67,7 +67,7 @@ export class EBookStorageService {
       ),
       catchError((err) => {
         this.toastrService.error(err);
-        return of([]);
+        return EMPTY;
       })
     );
   }
@@ -86,7 +86,7 @@ export class EBookStorageService {
       tap(() => this.storage.removeItem(this.collectionKey)),
       catchError((err) => {
         this.toastrService.error(err);
-        return of(false);
+        return EMPTY;
       })
     );
   }

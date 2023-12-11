@@ -26,21 +26,21 @@ export class EBooksTabsComponent {
   getInitialTabs(): NavigationTab[] {
     const initialTabs = [
       {
-        name: 'stored',
+        name: 'Stored',
         url: 'stored',
         isShown: true,
         isDisabled: false,
         isActive: true,
       },
       {
-        name: 'find',
+        name: 'Find',
         url: 'find',
         isShown: true,
         isDisabled: false,
         isActive: false,
       },
       {
-        name: 'collection',
+        name: 'Collection',
         url: 'collection',
         isShown: true,
         isDisabled: false,

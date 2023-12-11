@@ -28,7 +28,7 @@ import { SharedModule } from './shared/shared.module';
     }), // ToastrModule added
     CoreModule,
     AuthModule,
-    AppRoutingModule,
+    AppRoutingModule
   ],
   providers: [
     {

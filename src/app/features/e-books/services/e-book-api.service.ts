@@ -2,7 +2,7 @@ import { ToastrService } from 'ngx-toastr';
 import { GoogleEBooksService } from './google-e-books.service';
 import { Injectable } from '@angular/core';
 import { EBookDataService } from './e-book-data.service';
-import { Observable, catchError, of, tap } from 'rxjs';
+import { Observable, catchError, of, tap, EMPTY } from 'rxjs';
 import { EBook } from '../models/e-book.model';
 
 @Injectable({
@@ -20,7 +20,7 @@ export class EBookApiService {
       tap((eBooks: EBook[]) => this.reqSuccess(eBooks)),
       catchError((err) => {
         this.reqFailure(err);
-        return of([]);
+        return EMPTY;
       })
     );
   }

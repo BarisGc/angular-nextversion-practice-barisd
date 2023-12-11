@@ -1,6 +1,6 @@
 import { ToastrService } from 'ngx-toastr';
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable, catchError, finalize, of, shareReplay, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, finalize, of, shareReplay, tap, EMPTY } from 'rxjs';
 import { Product } from '../models/product';
 import { ProductApiService } from './product-api.service';
 
@@ -31,7 +31,7 @@ export class ProductDataService {
       }),
       catchError((err) => {
         this.toastrService.error(err);
-        return of([]);
+        return EMPTY;
       }),
       finalize(() => this.isLoadingSub.next(false)),
       shareReplay(1)

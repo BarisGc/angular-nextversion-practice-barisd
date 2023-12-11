@@ -1,1 +1,46 @@
-<p>commit-infinite-scroll works!</p>
+<!-- TODO: try to refactor appResetHorizontalScroll directive -->
+<section
+  appScrollNearEnd
+  [appResetHorizontalScroll]="isYScrollReset"
+  (nearEnd)="onNearEndScroll()"
+>
+  <div class="reset-button-wrapper p-3">
+    <div>Keep scrolling - more items will reveal</div>
+
+    <button (click)="onReset()" mat-flat-button color="accent">
+      Reset value
+    </button>
+  </div>
+  <table mat-table [dataSource]="dataSourceSignal()" [trackBy]="identity">
+    <ng-container matColumnDef="id">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef>Id</th>
+      <td mat-cell *matCellDef="let row">
+        {{ row.id }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="firstName">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef>First Name</th>
+      <td mat-cell *matCellDef="let row">
+        {{ row.firstName }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="lastName">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef>Last Name</th>
+      <td mat-cell *matCellDef="let row">
+        {{ row.lastName }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="age">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef>Age</th>
+      <td mat-cell *matCellDef="let row">
+        {{ row.age }}
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+</section>

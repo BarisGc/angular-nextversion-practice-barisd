@@ -13,11 +13,13 @@ const DIRECTIVES: any = [RouterOutlet];
   imports: [...PIPES, ...COMPONENTS, ...MODULES, ...DIRECTIVES],
   styles: [],
   template: `
-    <div class="grid">
-      <div class="col-10 col-offset-1">
-        <app-commit-tabs><router-outlet /></app-commit-tabs>
+      <div class="grid-nogutter">
+        <div class="col-12">
+          <app-commit-tabs
+            ><div class="col-10 col-offset-1"><router-outlet /></div
+          ></app-commit-tabs>
+        </div>
       </div>
-    </div>
   `,
 })
 export class CommitPageComponent {}

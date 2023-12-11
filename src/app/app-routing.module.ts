@@ -7,7 +7,7 @@ import { TemplatePageTitleStrategy } from './core/services/overriding-global/tit
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '/e-books',
+    redirectTo: '/commits',
     pathMatch: 'full',
   },
   {

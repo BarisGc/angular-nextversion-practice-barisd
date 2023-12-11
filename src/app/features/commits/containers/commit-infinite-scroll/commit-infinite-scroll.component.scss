@@ -1,0 +1,21 @@
+section {
+  height: 75vh;
+  position: relative;
+}
+
+.reset-button-wrapper {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #D7BBF5;
+  width: 100%;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 32px;
+
+  box-shadow: 0px 11px 5px -1px rgba(168, 168, 168, 0.75);
+  -webkit-box-shadow: 0px 11px 5px -1px rgba(168, 168, 168, 0.75);
+  -moz-box-shadow: 0px 11px 5px -1px rgba(179, 148, 148, 0.75);
+}

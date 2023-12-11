@@ -2,7 +2,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Injectable } from '@angular/core';
 import { EBookStorageService } from './e-book-storage.service';
 import { EBook } from '../models/e-book.model';
-import { BehaviorSubject, Observable, catchError, map, of, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, of, tap, EMPTY } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -42,7 +42,7 @@ export class EBookCollectionService {
       map((eBooks: EBook[]) => this.loadCollectionSuccess(eBooks)),
       catchError((err: string) => {
         this.loadCollectionFailure(err);
-        return of([]);
+        return EMPTY;
       })
     );
   }
@@ -72,7 +72,7 @@ export class EBookCollectionService {
       tap(() => this.addEBookSuccess(eBooks)),
       catchError(() => {
         this.removeEBookFailure(eBooks);
-        return of([]);
+        return EMPTY;
       })
     );
   }
@@ -86,7 +86,7 @@ export class EBookCollectionService {
       tap(() => this.removeEBookSuccess(ids)),
       catchError(() => {
         this.addEBookFailure(ids);
-        return of([]);
+        return EMPTY;
       })
     );
   }

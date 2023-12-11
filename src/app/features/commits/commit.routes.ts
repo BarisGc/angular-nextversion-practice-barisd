@@ -12,7 +12,7 @@ export const COMMIT_ROUTES: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'table-with-pagination',
+        redirectTo: 'infinite-scroll',
         pathMatch: 'full',
       },
       {

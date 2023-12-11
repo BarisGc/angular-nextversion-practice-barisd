@@ -15,11 +15,11 @@ export const COMPONENTS = [
   NotFoundPageComponent,
   LayoutComponent,
   NavItemComponent,
-  ToolbarComponent,
+  ToolbarComponent
 ];
 
 @NgModule({
-  imports: [SharedModule, RouterModule, MaterialModule],
+  imports: [SharedModule, RouterModule, MaterialModule,],
   declarations: COMPONENTS,
   exports: COMPONENTS,
 })

@@ -1,9 +1,95 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  TrackByFunction,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { DummyDataForInfiniteScroll } from '../../models/commit';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { tap } from 'rxjs';
+import { CommitService } from '../../services/commit.service';
+import { ScrollNearEndDirective } from '../../directives/scroll-near-end.directive';
+import { ResetHorizontalScrollDirective } from '../../directives/reset-horizontal-scroll.directive';
+import { MatButton, MatButtonModule } from '@angular/material/button';
 
+const PIPES: any = [];
+const COMPONENTS: any = [];
+const MODULES = [MatTableModule, ScrollNearEndDirective,ResetHorizontalScrollDirective, MatButtonModule];
+const DIRECTIVES: any = [];
 @Component({
   selector: 'app-commit-infinite-scroll',
   standalone: true,
   templateUrl: './commit-infinite-scroll.component.html',
   styleUrl: './commit-infinite-scroll.component.scss',
+  imports: [...PIPES, ...COMPONENTS, ...MODULES, ...DIRECTIVES],
 })
-export class CommitInfiniteScrollComponent {}
+export class CommitInfiniteScrollComponent {
+  private defaultValue = 30;
+  isYScrollReset = false
+
+  commitService = inject(CommitService);
+  elementRef = inject(ElementRef);
+  private destroyRef = inject(DestroyRef);
+
+  ngOnInit() {
+    this.setInitialState();
+  }
+  setInitialState() {
+    this.getDummyDataForInfiniteScroll();
+  }
+  // TODO: convert into signal completely
+  getDummyDataForInfiniteScroll() {
+    this.commitService
+      .getDummyDataForInfiniteScroll()
+      .pipe(
+        tap((data) => {
+          this.dummyDataSignal.set(data ?? []);
+          this.limitSignal.set(this.defaultValue);
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe();
+  }
+
+  // internal collection of DummyData
+  private dummyDataSignal = signal<DummyDataForInfiniteScroll[]>([]);
+  // how many elements I want to display
+  private limitSignal = signal<number>(this.defaultValue);
+
+  dataSourceSignal = computed(() => {
+    // slice data to display only portion of them
+    const data = this.dummyDataSignal().slice(0, this.limitSignal());
+
+    // create correct data structure
+    return new MatTableDataSource<DummyDataForInfiniteScroll>(data);
+  });
+
+  displayedColumns: string[] = ['id', 'firstName', 'lastName', 'age'];
+
+  // tracking indentity for rendering
+  identity: TrackByFunction<DummyDataForInfiniteScroll> = (
+    _,
+    item: DummyDataForInfiniteScroll
+  ) => item.id;
+
+  onReset(): void {
+    this.limitSignal.set(this.defaultValue);
+    this.isYScrollReset = true
+    // this.isYScrollReset = false
+  }
+
+  // increase the number of displayed items
+  onNearEndScroll(): void {
+    this.isYScrollReset = false
+    this.limitSignal.update((val) => val + this.defaultValue);
+  }
+
+  addData() {
+    this.isYScrollReset = false
+    this.limitSignal.update((val) => val + this.defaultValue);
+  }
+}

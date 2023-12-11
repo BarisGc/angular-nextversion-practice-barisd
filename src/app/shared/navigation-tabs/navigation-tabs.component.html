@@ -13,28 +13,12 @@
       [routerLinkActiveOptions]="{ exact: true }"
       [active]="rla.isActive"
     >
-      <!--
-[queryParams]="{
-  exampleQueryParams1: i + 1,
-  exampleQueryParams2: i + 2
-}"
-[fragment]="'example-fragment=' + (i + 1)"
--->
       {{ tab.name }}
-
-      <!-- #titlecase #first use titlecase instead.
-capitalizeFirstLetters(sentence: string) {
-  sentence
-    .split(' ')
-    .map((element) => element[0].toLocaleUpperCase() + element.slice(1).toLocaleLowerCase())
-    .join(' ');
-} -->
     </a></ng-container
   >
 </nav>
 <mat-tab-nav-panel #tabPanel><ng-content></ng-content></mat-tab-nav-panel>
-<pre>
-  selectedEBook: {{ selectedEBook$ | async | json }}
+<!-- <pre>
   activeLink: {{ activeLink | json }}
   navigationTabs: {{ navigationTabs | json }}
-</pre>
+</pre> -->

@@ -8,8 +8,8 @@ import {
   MatTableModule,
 } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {
@@ -29,7 +29,6 @@ const MODULES = [
   MatInputModule,
   CdkDropList,
   CdkDrag,
-  CommonModule,
 ];
 const DIRECTIVES = [NgOptimizedImage];
 @Component({
@@ -42,13 +41,13 @@ const DIRECTIVES = [NgOptimizedImage];
 export class ProductListComponent {
   dataSource: MatTableDataSource<Product> = new MatTableDataSource();
 
+  // If the table is inside *ngIf, it won't be working. It will work if it is changed to [hidden]
+  // Alternative: use setter
   @Input() set products(value: Product[]) {
     this.dataSource.data = value;
   }
   @Input({ required: true }) isLoading = true;
 
-  // If the table is inside *ngIf, it won't be working. It will work if it is changed to [hidden]
-  // Alternative: use setter
   @ViewChild(MatSort) set matSort(sort: MatSort) {
     if (!this.dataSource.sort) {
       this.dataSource.sort = sort;
@@ -77,7 +76,11 @@ export class ProductListComponent {
   }
 
   drop(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.columns, event.previousIndex, event.currentIndex);
+    moveItemInArray(
+      this.displayedColumns,
+      event.previousIndex,
+      event.currentIndex
+    );
   }
 
   setColumns() {
@@ -112,7 +115,6 @@ export class ProductListComponent {
         header: 'Discount %',
         cell: (element: Product) => `${element.discountPercentage}`,
       },
-
       {
         columnDef: 'price',
         header: 'Price',

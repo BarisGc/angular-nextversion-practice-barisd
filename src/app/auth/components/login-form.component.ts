@@ -23,11 +23,15 @@ import { Credentials } from '../models/user';
           <p>
             <mat-form-field>
               <input
-                type="password"
                 matInput
-                placeholder="Password"
+                [type]="showPassword ? 'text' : 'password'"
+                name="password"
                 formControlName="password"
+                placeholder="Password"
               />
+              <mat-icon matSuffix style="cursor:pointer" (click)="togglePasswordVisibility()">
+                {{ showPassword ? 'visibility_off' : 'visibility' }}
+              </mat-icon>
             </mat-form-field>
           </p>
 
@@ -98,9 +102,15 @@ export class LoginFormComponent {
     password: new FormControl('Password10'),
   });
 
+  showPassword = false;
+
   submit() {
     if (this.form.valid) {
       this.submitted.emit(this.form.value);
     }
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 }

@@ -12,7 +12,7 @@ export const COMMIT_ROUTES: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'load-more',
+        redirectTo: 'table-with-virtual-scroll',
         pathMatch: 'full',
       },
       {

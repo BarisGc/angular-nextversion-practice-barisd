@@ -1,1 +1,52 @@
-<p>commit-load-more works!</p>
+<div class="example-container mat-elevation-z8">
+  @if (isRateLimitReached$ | async) {
+    <div class="example-loading-shade">
+      <div class="example-rate-limit-reached">
+        GitHub's API rate limit has been reached. It will be reset in one
+        minute.
+      </div>
+    </div>
+  }
+  <!-- TODO: place all tables in project under if loading condition -->
+  <div class="example-table-container">
+    <table mat-table [dataSource]="dataSource" class="example-table">
+      @for (column of columns; track column) {
+        <ng-container [matColumnDef]="column.columnDef">
+          @switch (column.columnDef) {
+            @case ('created') {
+              <th mat-header-cell *matHeaderCellDef>
+                {{ column.header }}
+              </th>
+              <td mat-cell *matCellDef="let githubIssue">
+                {{ column.cell(githubIssue) | date }}
+              </td>
+            }
+            @default {
+              <th mat-header-cell *matHeaderCellDef>{{ column.header }}</th>
+              <td mat-cell *matCellDef="let githubIssue">
+                {{ column.cell(githubIssue) }}
+              </td>
+            }
+          }
+        </ng-container>
+      }
+
+      <tr
+        mat-header-row
+        *matHeaderRowDef="displayedColumns; sticky: true"
+        style="background-color: #f8dfd4"
+      ></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+  <div class="flex justify-content-center p-3">
+    <button mat-raised-button color="primary" (click)="loadMoreData()">
+      Load More
+      @if (isLoadingResults$ | async) {
+        <mat-icon iconPositionEnd
+          ><mat-spinner color="white" diameter="20"></mat-spinner
+        ></mat-icon>
+      }
+    </button>
+  </div>
+</div>

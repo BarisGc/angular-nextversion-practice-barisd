@@ -1,7 +1,6 @@
 import {
   Component,
   DestroyRef,
-  ElementRef,
   TrackByFunction,
   computed,
   inject,
@@ -14,7 +13,7 @@ import { tap } from 'rxjs';
 import { CommitService } from '../../services/commit.service';
 import { ScrollNearEndDirective } from '../../directives/scroll-near-end.directive';
 import { ResetHorizontalScrollDirective } from '../../directives/reset-horizontal-scroll.directive';
-import { MatButton, MatButtonModule } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 
 const PIPES: any = [];
 const COMPONENTS: any = [];
@@ -28,11 +27,11 @@ const DIRECTIVES: any = [];
   imports: [...PIPES, ...COMPONENTS, ...MODULES, ...DIRECTIVES],
 })
 export class CommitInfiniteScrollComponent {
-  private defaultValue = 30;
   isYScrollReset = false
+  private defaultValue = 30;
 
-  commitService = inject(CommitService);
-  elementRef = inject(ElementRef);
+  // TODO: check all properties in the project if private keyword necessary, make private if no used in template
+  private commitService = inject(CommitService);
   private destroyRef = inject(DestroyRef);
 
   ngOnInit() {
@@ -79,7 +78,6 @@ export class CommitInfiniteScrollComponent {
   onReset(): void {
     this.limitSignal.set(this.defaultValue);
     this.isYScrollReset = true
-    // this.isYScrollReset = false
   }
 
   // increase the number of displayed items

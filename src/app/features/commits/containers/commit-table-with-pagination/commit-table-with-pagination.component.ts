@@ -45,30 +45,21 @@ export class CommitTableWithPaginationComponent {
 
   private destroyRef = inject(DestroyRef);
   ngOnInit() {}
-
+  // TODO: fix paginated item numbers does not update the table
   ngAfterViewInit() {
     // If the user changes the sort order, reset back to the first page.
-    this.sort.sortChange.subscribe(
-      () => (this.paginator.pageIndex = 0)
-    );
+    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
     merge(this.sort.sortChange, this.paginator.page)
       .pipe(
         startWith({}),
         switchMap(() => {
           this.isLoadingResults = true;
-          return this.commitService
-            .getRepoIssues(
-              this.sort.active,
-              this.sort.direction,
-              this.paginator.pageIndex
-            )
-            .pipe(
-              catchError((err: any) => {
-                this.toastrService.error(err?.error?.message || "Format Err Message!");
-                return EMPTY;
-              })
-            );
+          return this.commitService.getRepoIssues(
+            this.sort.active,
+            this.sort.direction,
+            this.paginator.pageIndex
+          );
         }),
         map((data) => {
           // Flip flag to show that loading has finished.

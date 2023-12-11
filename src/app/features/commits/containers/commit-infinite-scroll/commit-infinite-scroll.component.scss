@@ -5,12 +5,13 @@ section {
 
 .reset-button-wrapper {
   position: sticky;
+  z-index: 5;
   top: 0;
   display: flex;
   justify-content: space-around;
   align-items: center;
   background-color: #D7BBF5;
-  width: 100%;
+  width: auto;
   font-weight: 500;
   font-size: 20px;
   line-height: 32px;

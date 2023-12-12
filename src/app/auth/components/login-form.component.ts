@@ -29,7 +29,11 @@ import { Credentials } from '../models/user';
                 formControlName="password"
                 placeholder="Password"
               />
-              <mat-icon matSuffix style="cursor:pointer" (click)="togglePasswordVisibility()">
+              <mat-icon
+                matSuffix
+                style="cursor:pointer"
+                (click)="togglePasswordVisibility()"
+              >
                 {{ showPassword ? 'visibility_off' : 'visibility' }}
               </mat-icon>
             </mat-form-field>

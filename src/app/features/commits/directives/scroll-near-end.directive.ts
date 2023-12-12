@@ -22,7 +22,6 @@ export class ScrollNearEndDirective {
   @Input() threshold = 100;
 
   constructor(private el: ElementRef) {
-    console.log(this.el);
   }
 
   ngOnInit(): void {}
@@ -32,22 +31,22 @@ export class ScrollNearEndDirective {
   scrollEvent(_event: KeyboardEvent) {
     // Get the height of the element to which the directive is attached
     const heightOfElement = this.el.nativeElement.scrollHeight;
-    console.log('heightOfElement', heightOfElement);
+    // console.log('heightOfElement', heightOfElement);
     // Get the current Y scroll position (change by scrolling)
     const currentScrolledY = this.el.nativeElement.scrollTop;
-    console.log('currentScrolledY', currentScrolledY);
+    // console.log('currentScrolledY', currentScrolledY);
 
     // Get the height of the viewed window (constant value, but shrinks if dev tools is open)
     const innerHeight = window.innerHeight;
-    console.log('innerHeight', innerHeight);
+    // console.log('innerHeight', innerHeight);
 
     const scrollToBottom = heightOfElement - currentScrolledY - innerHeight;
-    console.log('scrollToBottom', scrollToBottom);
+    // console.log('scrollToBottom', scrollToBottom);
     if (scrollToBottom < this.threshold) {
-      console.log(
-        '%c [ScrollNearEndDirective]: emit',
-        'color: #bada55; font-size: 20px'
-      );
+      // console.log(
+      //   '%c [ScrollNearEndDirective]: emit',
+      //   'color: #bada55; font-size: 20px'
+      // );
       this.nearEnd.emit();
     }
   }

@@ -28,6 +28,7 @@ export class NavigationTabsComponent implements OnInit, OnChanges {
   activeLink = '';
   navigationTabs!: NavigationTab[];
 
+  // TODO: DELETE selectedEBook implementation
   selectedEBook$!: Observable<EBook | null>;
 
   masterSubscription = new Subscription();

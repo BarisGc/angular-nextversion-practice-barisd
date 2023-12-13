@@ -42,14 +42,15 @@ export class CommitService {
   getRepoIssues(
     sort: string,
     order: SortDirection,
-    page: number
+    page: number,
+    per_page = 30
   ): Observable<GithubApi> {
     this.repoIssuesLoadingSub.next(true);
 
     const href = 'https://api.github.com/search/issues';
     const requestUrl = `${href}?q=repo:angular/components&sort=${sort}&order=${order}&page=${
       page + 1
-    }`;
+    }&per_page=${per_page}`;
 
     return this.httpClient.get<GithubApi>(requestUrl).pipe(
       tap((data) => {

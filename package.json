@@ -8,6 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "prod": "ng serve --configuration=production",
     "test": "ng test",
+    "test:jest": "jest --watch",
     "lint": "ng lint"
   },
   "private": true,
@@ -38,19 +39,38 @@
     "@angular-eslint/template-parser": "17.1.1",
     "@angular/cli": "^17.0.3",
     "@angular/compiler-cli": "^17.0.0",
+    "@testing-library/angular": "^15.1.0",
+    "@testing-library/jest-dom": "^6.1.5",
+    "@testing-library/user-event": "^14.5.1",
     "@types/jasmine": "~5.1.0",
+    "@types/jest": "^29.5.11",
     "@typescript-eslint/eslint-plugin": "6.13.1",
     "@typescript-eslint/parser": "6.13.1",
     "eslint": "^8.54.0",
     "eslint-plugin-rxjs": "^5.0.3",
     "eslint-plugin-rxjs-angular": "^2.0.1",
     "jasmine-core": "~5.1.0",
+    "jest": "^29.7.0",
+    "jest-preset-angular": "^13.1.4",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "msw": "^2.0.11",
     "prettier": "3.1.0",
-    "typescript": "~5.2.2"
+    "typescript": "~5.2.2",
+    "whatwg-fetch": "^3.6.19"
+  },
+  "jest": {
+    "preset":"jest-preset-angular",
+    "setupFilesAfterEnv": ["<rootDir>/setup-jest.ts"],
+    "transform":{
+      "^.+\\.(ts|js|html)$":"jest-preset-angular"
+    },
+    "testMatch":[
+      "**/?(*.)+(jest).ts"
+    ],
+    "testEnvironment":"jsdom"
   }
 }

@@ -52,8 +52,9 @@
     [showFirstLastButtons]="false"
     [length]="resultsLength"
     [pageSizeOptions]="[5, 10, 30]"
-    [pageSize]="30"
+    [pageSize]="pageSize"
     aria-label="Select page of GitHub search results"
+    (page)="handlePaginationEvent($event)"
   ></mat-paginator>
 </div>
 

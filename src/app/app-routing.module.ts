@@ -7,7 +7,7 @@ import { TemplatePageTitleStrategy } from './core/services/overriding-global/tit
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '/commits',
+    redirectTo: '/e-books',
     pathMatch: 'full',
   },
   {
@@ -24,6 +24,8 @@ const routes: Routes = [
       import('./features/product/product.routes').then(
         (mod) => mod.PRODUCT_ROUTES
       ),
+    canActivate: [authGuard],
+    canLoad: [authGuard],
     title: 'Product',
   },
   {
@@ -32,7 +34,19 @@ const routes: Routes = [
       import('./features/commits/commit.routes').then(
         (mod) => mod.COMMIT_ROUTES
       ),
+    canActivate: [authGuard],
+    canLoad: [authGuard],
     title: 'Commits',
+  },
+  {
+    path: 'various-libraries',
+    loadChildren: () =>
+      import('./features/various-libraries/various-libraries.routes').then(
+        (mod) => mod.VARIOUS_LIBRARIES_ROUTES
+      ),
+    canActivate: [authGuard],
+    canLoad: [authGuard],
+    title: 'Various-libraries',
   },
   {
     path: '**',

@@ -14,6 +14,7 @@ import { Credentials } from '../models/user';
     </app-login-form>
   `,
   styles: [],
+  host: { 'data-testid': 'login-page' },
 })
 export class LoginPageComponent implements OnInit {
   pending$: Observable<boolean> = of(false);

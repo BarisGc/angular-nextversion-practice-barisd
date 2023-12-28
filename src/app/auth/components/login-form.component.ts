@@ -5,7 +5,7 @@ import { Credentials } from '../models/user';
 @Component({
   selector: 'app-login-form',
   template: `
-    <mat-card>
+    <mat-card data-testid="form-login">
       <mat-card-title>Login</mat-card-title>
       <mat-card-content>
         <form [formGroup]="form" (ngSubmit)="submit()">

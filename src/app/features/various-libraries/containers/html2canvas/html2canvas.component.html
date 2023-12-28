@@ -1,0 +1,28 @@
+<div class="grid grid-nogutter">
+  <div class="col-6 col-offset-3 mb-3">
+    <div class="text-center p-3 border-round-sm bg-primary font-bold">
+      <button mat-raised-button color="primary" (click)="screenshotEmbed()">
+        Take SS 1
+      </button>
+      <button mat-raised-button color="primary" (click)="screenshotDATAURL()">
+        Take SS 2
+      </button>
+      <button mat-raised-button color="primary" (click)="screenshotBlob()">
+        Take SS 3
+      </button>
+    </div>
+  </div>
+  <div class="col-6 col-offset-3 mb-3">
+    <div
+      id="capture"
+      class="text-center p-3 border-round-sm bg-primary font-bold"
+    >
+      <div style="padding: 10px; background: #f5da55">
+        <h4 style="color: #000">To be ss</h4>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-offset-3">
+    <div id="showArea"></div>
+  </div>
+</div>

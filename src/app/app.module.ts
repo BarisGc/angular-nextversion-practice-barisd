@@ -11,6 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { CoreModule } from './core/core.module';
 import { AuthModule } from './auth/auth.module';
 import { SharedModule } from './shared/shared.module';
+
 @NgModule({
   imports: [
     // TODO: is commonmodule necessary? check if you can delete all commonmodules
@@ -28,7 +29,7 @@ import { SharedModule } from './shared/shared.module';
     }), // ToastrModule added
     CoreModule,
     AuthModule,
-    AppRoutingModule
+    AppRoutingModule,
   ],
   providers: [
     {

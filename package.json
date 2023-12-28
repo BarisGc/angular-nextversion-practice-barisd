@@ -23,6 +23,7 @@
     "@angular/platform-browser": "^17.0.0",
     "@angular/platform-browser-dynamic": "^17.0.0",
     "@angular/router": "^17.0.0",
+    "html2canvas": "^1.4.1",
     "ng-table-virtual-scroll": "^1.6.0",
     "ngx-toastr": "^18.0.0",
     "primeflex": "^3.3.1",
@@ -63,12 +64,14 @@
     "whatwg-fetch": "^3.6.19"
   },
   "jest": {
-    "preset":"jest-preset-angular",
-    "globalSetup":"jest-preset-angular/global-setup",
-    "setupFilesAfterEnv": ["<rootDir>/setup-jest.ts"],
-    "testMatch":[
+    "preset": "jest-preset-angular",
+    "globalSetup": "jest-preset-angular/global-setup",
+    "setupFilesAfterEnv": [
+      "<rootDir>/setup-jest.ts"
+    ],
+    "testMatch": [
       "**/?(*.)+(jest).ts"
     ],
-    "testEnvironment":"jsdom"
+    "testEnvironment": "jsdom"
   }
 }

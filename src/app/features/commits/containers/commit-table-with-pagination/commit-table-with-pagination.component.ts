@@ -1,7 +1,11 @@
 import { ToastrService } from 'ngx-toastr';
 import { HttpClient } from '@angular/common/http';
 import { Component, DestroyRef, ViewChild, inject } from '@angular/core';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import {
+  MatPaginator,
+  MatPaginatorModule,
+  PageEvent,
+} from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { merge, startWith, switchMap, catchError, map, of, EMPTY } from 'rxjs';
 import { GithubIssue } from '../../models/commit';
@@ -45,10 +49,20 @@ export class CommitTableWithPaginationComponent {
 
   private destroyRef = inject(DestroyRef);
   ngOnInit() {}
-  // TODO: fix paginated item numbers does not update the table
+
+  handlePaginationEvent(e: PageEvent) {
+    this.pageSize = e.pageSize;
+  }
+
   ngAfterViewInit() {
+    this.handleTableSort();
+  }
+
+  handleTableSort() {
     // If the user changes the sort order, reset back to the first page.
-    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+    this.sort.sortChange
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => (this.paginator.pageIndex = 0));
 
     merge(this.sort.sortChange, this.paginator.page)
       .pipe(
@@ -80,7 +94,7 @@ export class CommitTableWithPaginationComponent {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe((data) => {
-        this.dataSource.data = data;
+        this.dataSource.data = data.slice(0, this.pageSize);
       });
   }
 
